@@ -71,6 +71,19 @@
   .promise p{font-size:16px;color:#e3e7ee;position:relative}
   .promise .hl{color:var(--emerald);font-weight:800}
 
+  /* Блок «Что входит в спец-цену» */
+  .bonus-banner{margin-top:14px;background:linear-gradient(135deg,rgba(245,196,81,.16),rgba(16,217,138,.08));border:1.5px solid rgba(245,196,81,.45);border-radius:22px;padding:22px;position:relative;overflow:hidden;box-shadow:0 14px 44px rgba(245,196,81,.14)}
+  .bb-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+  .bb-icon{font-size:34px;flex:0 0 50px;height:50px;border-radius:14px;background:rgba(245,196,81,.18);display:flex;align-items:center;justify-content:center}
+  .bb-title{font-family:var(--disp);font-size:19px;font-weight:800;color:var(--gold)}
+  .bb-sub{font-size:13.5px;color:var(--mut);margin-top:2px}
+  .bb-items{display:flex;flex-direction:column;gap:10px}
+  .bb-item{display:flex;gap:13px;align-items:center;padding:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px}
+  .bb-num{flex:0 0 60px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06281c;font-family:var(--disp);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;letter-spacing:-.5px}
+  .bb-num.bb-call{font-size:24px}
+  .bb-item b{display:block;font-family:var(--disp);font-size:15.5px;font-weight:700;margin-bottom:2px}
+  .bb-item span{color:var(--mut);font-size:13.5px}
+
   .why{display:flex;flex-direction:column;gap:13px}
   .why-item{display:flex;gap:15px;align-items:flex-start;padding:17px 19px}
   .why-item .n{flex:0 0 40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -215,6 +228,21 @@
     <p>Главное отличие: мы <span class="hl">на связи и ведём вас до первых реальных продаж</span>. Не «вот вам уроки, дальше сами» — мы разбираем ваши вопросы, смотрим вашу ситуацию и помогаем пройти каждый шаг. Пока не увидите первый результат.</p>
   </div>
 
+  <!-- ЧТО ВХОДИТ В БОНУС -->
+  <div class="bonus-banner reveal">
+    <div class="bb-head">
+      <div class="bb-icon">🎁</div>
+      <div>
+        <div class="bb-title">Что входит в спец-цену</div>
+        <div class="bb-sub">Бонус на 24 часа — два конкретных пункта:</div>
+      </div>
+    </div>
+    <div class="bb-items">
+      <div class="bb-item"><span class="bb-num">−20%</span><div><b>Скидка на любой формат</b><span>Цены ниже уже пересчитаны</span></div></div>
+      <div class="bb-item"><span class="bb-num bb-call">📞</span><div><b>Личный созвон со мной</b><span>30 минут по видео — посмотрим вашу ситуацию вживую</span></div></div>
+    </div>
+  </div>
+
   <div class="section-h reveal"><span class="bar"></span><h2>Почему с нами</h2></div>
   <div class="why" id="why"></div>
 
@@ -246,7 +274,7 @@
 <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
-<div class="cta-bar"><div class="inner"><button class="cta-main" id="ctaMain" onclick="book()">🎁 Получить спец-цену в подарок<span class="cta-sub">−20% на 24 часа · нажми — цены обновятся</span></button></div></div>
+<div class="cta-bar"><div class="inner"><button class="cta-main" id="ctaMain" onclick="book()">🎁 Скидка −20% + личный созвон<span class="cta-sub">на 24 часа · нажми — цены обновятся</span></button></div></div>
 
 <script>
 const TG = window.Telegram ? window.Telegram.WebApp : null;
@@ -373,7 +401,22 @@ function openSheet(i){
 }
 function closeSheet(){$('sheet').classList.remove('on');$('sheetBg').classList.remove('on');}
 function viewImg(src){$('viewerImg').src=src;$('viewer').classList.add('on');}
-function book(){var target=(PROMO_ON&&DISCOUNT)?DISCOUNT:CONTACT;if(target===DISCOUNT){if(TG&&TG.openLink){TG.openLink(target);}else{window.open(target,'_blank');}}else{if(TG&&TG.openTelegramLink){TG.openTelegramLink(CONTACT);}else{window.open(CONTACT,'_blank');}}}
+function book(){
+  if(PROMO_ON && DISCOUNT){
+    // промо активно — ведём на сайт со скидкой
+    if(TG&&TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');}
+  } else {
+    // промо ещё не запущено — закрываем аппку, человек вернётся в чат
+    // и нажмёт кнопку запуска промо в боте (там запустится таймер)
+    if(TG && TG.close){
+      try { TG.HapticFeedback && TG.HapticFeedback.impactOccurred('medium'); } catch(e){}
+      if(TG.showAlert){TG.showAlert('Сейчас вернётесь в чат — нажмите кнопку запуска бонуса там, и таймер пойдёт.', function(){TG.close();});}
+      else {TG.close();}
+    } else {
+      if(TG&&TG.openTelegramLink){TG.openTelegramLink(CONTACT);}else{window.open(CONTACT,'_blank');}
+    }
+  }
+}
 
 // reveal-on-scroll
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
