@@ -3,147 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Amazon с Вадимом — программы и результаты</title>
+<title>Amazon с Вадимом</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0c0d10; --card:#15171c; --card2:#1b1e25; --line:#262a33;
-    --txt:#eef0f4; --mut:#9aa1ad; --accent:#3b82f6;
-    --amber:#f59e0b; --blue:#3b82f6; --violet:#8b5cf6; --emerald:#10b981;
-    --rose:#f43f5e; --cyan:#06b6d4; --teal:#14b8a6; --orange:#f97316;
-    --indigo:#6366f1; --pink:#ec4899;
+    --bg:#070809; --card:rgba(255,255,255,.035); --card2:rgba(255,255,255,.06); --line:rgba(255,255,255,.09);
+    --txt:#f4f6fa; --mut:#9aa2b0; --accent:#10d98a; --accent2:#22d3ee; --gold:#f5c451;
+    --amber:#fbbf24; --blue:#60a5fa; --violet:#a78bfa; --emerald:#10d98a;
+    --rose:#fb7185; --cyan:#22d3ee; --teal:#2dd4bf; --orange:#fb923c; --indigo:#818cf8; --pink:#f472b6;
+    --disp:'Sora',system-ui,sans-serif; --body:'Manrope',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--bg);color:var(--txt);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    font-size:15px;line-height:1.5;overscroll-behavior-y:none}
-  body{padding-bottom:96px}
-  .wrap{max-width:680px;margin:0 auto;padding:0 16px}
-  .hero{padding:24px 16px 8px;text-align:center}
-  .hero h1{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
-  .hero p{color:var(--mut);font-size:14px}
-  .section-h{display:flex;align-items:center;gap:8px;margin:28px 0 12px}
-  .section-h .bar{width:4px;height:18px;border-radius:2px;background:var(--accent)}
-  .section-h h2{font-size:18px;font-weight:700}
-  .section-h .cnt{margin-left:auto;color:var(--mut);font-size:13px}
-  .res-scroll{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px;
-    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-  .res-scroll::-webkit-scrollbar{display:none}
-  .res-card{flex:0 0 78%;max-width:280px;scroll-snap-align:center;
-    background:var(--card);border:1px solid var(--line);border-radius:16px;
-    overflow:hidden;display:flex;flex-direction:column}
-  .res-imgwrap{position:relative;height:150px;cursor:pointer}
-  .res-imgwrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
-  .res-ph{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800}
-  .res-ph .big{font-size:26px}
-  .res-ph .sm{font-size:12px;font-weight:600;opacity:.85;margin-top:2px}
-  .res-meta{padding:12px 14px}
-  .res-num{font-size:22px;font-weight:800;line-height:1.1}
-  .res-lbl{color:var(--mut);font-size:12px;margin-bottom:6px}
-  .res-name{font-size:14px;font-weight:600}
-  .res-loc{color:var(--mut);font-size:12.5px}
-  .hint{text-align:center;color:var(--mut);font-size:12px;margin:-4px 0 4px}
-  .tariff{background:var(--card);border:1px solid var(--line);border-radius:18px;
-    padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
-  .tariff.popular{border-color:rgba(139,92,246,.5)}
-  .tariff.vip{border-color:rgba(16,185,129,.5)}
-  .tariff .badge{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;
-    padding:3px 10px;border-radius:20px;letter-spacing:.5px}
-  .badge.pop{background:rgba(139,92,246,.18);color:#c4b5fd}
-  .badge.vip{background:rgba(16,185,129,.18);color:#6ee7b7}
-  .t-name{font-size:19px;font-weight:800}
-  .t-sub{color:var(--mut);font-size:13px;margin-bottom:12px}
-  .t-price{font-size:30px;font-weight:800;letter-spacing:-1px}
-  .t-price small{font-size:14px;color:var(--mut);font-weight:600}
-  .t-old{font-size:18px;color:var(--mut);text-decoration:line-through;font-weight:600;letter-spacing:0}
+  html,body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:16px;line-height:1.6;
+    overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
+  body{padding-bottom:108px;position:relative}
+  /* живой фон-aurora */
+  body::before{content:'';position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(40% 30% at 50% -5%, rgba(16,217,138,.16), transparent 70%),
+      radial-gradient(36% 28% at 96% 12%, rgba(167,139,250,.12), transparent 70%),
+      radial-gradient(38% 30% at 4% 30%, rgba(34,211,238,.10), transparent 70%),
+      radial-gradient(40% 30% at 80% 80%, rgba(245,196,81,.07), transparent 70%);
+    animation:aurora 22s ease-in-out infinite alternate}
+  @keyframes aurora{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(0,-2%,0) scale(1.06)}100%{transform:translate3d(0,2%,0) scale(1.03)}}
+  /* зерно для текстуры */
+  body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.025;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  .hero{position:relative;padding:40px 18px 8px;text-align:center}
+  .hero .kicker{font-family:var(--disp);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+    color:var(--accent);margin-bottom:12px;opacity:.9}
+  .hero h1{font-family:var(--disp);font-size:33px;font-weight:800;letter-spacing:-1px;margin-bottom:10px;line-height:1.08}
+  .hero h1 .grad{background:linear-gradient(120deg,#10d98a,#22d3ee 60%,#f5c451);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--mut);font-size:16px;max-width:420px;margin:0 auto}
+
+  .section-h{display:flex;align-items:center;gap:11px;margin:40px 0 18px}
+  .section-h .bar{width:5px;height:26px;border-radius:3px;background:linear-gradient(var(--accent),var(--accent2));box-shadow:0 0 14px rgba(16,217,138,.5)}
+  .section-h h2{font-family:var(--disp);font-size:24px;font-weight:800;letter-spacing:-.5px}
+  .section-h .cnt{margin-left:auto;color:var(--mut);font-size:14px}
+
+  /* стеклянные карточки */
+  .glass{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    backdrop-filter:blur(14px) saturate(120%);-webkit-backdrop-filter:blur(14px) saturate(120%);
+    box-shadow:0 8px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05)}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  .inside{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .in-card{padding:18px}
+  .in-card .e{font-size:27px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))}
+  .in-card b{display:block;font-family:var(--disp);font-size:16px;margin:10px 0 4px;font-weight:700}
+  .in-card span{color:var(--mut);font-size:14px}
+  .in-card.wide{grid-column:1 / -1}
+
+  .promise{background:linear-gradient(135deg,rgba(16,217,138,.2),rgba(34,211,238,.05));
+    border:1.5px solid rgba(16,217,138,.5);border-radius:22px;padding:26px;margin-top:16px;position:relative;overflow:hidden;
+    box-shadow:0 16px 50px rgba(16,217,138,.16)}
+  .promise::after{content:'';position:absolute;top:-50%;right:-20%;width:60%;height:200%;
+    background:radial-gradient(circle,rgba(16,217,138,.18),transparent 70%);pointer-events:none}
+  .promise .ttl{font-family:var(--disp);display:flex;align-items:center;gap:12px;font-size:23px;font-weight:800;margin-bottom:12px;line-height:1.12}
+  .promise .ttl .e{font-size:32px}
+  .promise p{font-size:16px;color:#e3e7ee;position:relative}
+  .promise .hl{color:var(--emerald);font-weight:800}
+
+  .why{display:flex;flex-direction:column;gap:13px}
+  .why-item{display:flex;gap:15px;align-items:flex-start;padding:17px 19px}
+  .why-item .n{flex:0 0 40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 6px 18px rgba(16,217,138,.35)}
+  .why-item b{display:block;font-family:var(--disp);font-size:17px;font-weight:700;margin-bottom:3px}
+  .why-item span{color:var(--mut);font-size:14px}
+
+  .vs{border-radius:20px;overflow:hidden}
+  .vs-head{display:grid;grid-template-columns:1.05fr 1fr 1fr}
+  .vs-head div{padding:15px 12px;font-family:var(--disp);font-weight:800;font-size:14px;text-align:center}
+  .vs-head .h-self{background:rgba(251,113,133,.12);color:#fda4af}
+  .vs-head .h-us{background:rgba(16,217,138,.16);color:#6ee7b7}
+  .vs-row{display:grid;grid-template-columns:1.05fr 1fr 1fr;border-top:1px solid var(--line)}
+  .vs-row div{padding:14px 12px;font-size:13.5px;display:flex;align-items:center}
+  .vs-row .lbl{background:rgba(255,255,255,.04);font-family:var(--disp);font-weight:700;font-size:13px}
+  .vs-row .self{color:#fca5a5}
+  .vs-row .us{color:#86efac;font-weight:700}
+
+  .road{position:relative}
+  .step-r{position:relative;display:flex;gap:17px;padding-bottom:22px}
+  .step-r:last-child{padding-bottom:0}
+  .step-r::before{content:'';position:absolute;left:19px;top:42px;bottom:0;width:2px;
+    background:linear-gradient(var(--accent),transparent)}
+  .step-r:last-child::before{display:none}
+  .step-r .num{flex:0 0 40px;height:40px;border-radius:50%;background:rgba(16,217,138,.1);
+    border:2px solid var(--accent);color:var(--accent);font-family:var(--disp);font-weight:800;font-size:16px;
+    display:flex;align-items:center;justify-content:center;z-index:1;box-shadow:0 0 18px rgba(16,217,138,.3)}
+  .step-r .body b{display:block;font-family:var(--disp);font-size:17px;margin-bottom:3px;font-weight:700}
+  .step-r .body p{font-size:14.5px;color:var(--mut)}
+
+  .tariff{border-radius:22px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
+  .tariff.popular{border-color:rgba(167,139,250,.55);box-shadow:0 16px 44px rgba(167,139,250,.18),inset 0 1px 0 rgba(255,255,255,.06)}
+  .tariff.vip{border-color:rgba(16,217,138,.55);box-shadow:0 16px 44px rgba(16,217,138,.18),inset 0 1px 0 rgba(255,255,255,.06)}
+  .tariff .badge{position:absolute;top:18px;right:18px;font-family:var(--disp);font-size:11.5px;font-weight:800;padding:5px 12px;border-radius:20px;letter-spacing:.5px}
+  .badge.pop{background:rgba(167,139,250,.22);color:#c4b5fd}
+  .badge.vip{background:rgba(16,217,138,.22);color:#6ee7b7}
+  .t-name{font-family:var(--disp);font-size:23px;font-weight:800}
+  .t-sub{color:var(--mut);font-size:14px;margin-bottom:15px}
+  .t-price{font-family:var(--disp);font-size:38px;font-weight:800;letter-spacing:-1.5px}
+  .t-price small{font-size:15px;color:var(--mut);font-weight:600}
+  .t-old{font-size:22px;color:var(--mut);text-decoration:line-through;font-weight:600;letter-spacing:0}
   .t-new{color:var(--emerald)}
-  .t-disc{font-size:13px;font-weight:700;color:#6ee7b7;background:rgba(16,185,129,.18);padding:3px 8px;border-radius:6px;vertical-align:middle;letter-spacing:0}
-  .t-result{font-size:13px;color:var(--mut);margin:6px 0 14px;padding:8px 12px;background:var(--card2);border-radius:10px}
-  .t-feats{list-style:none;margin-bottom:14px}
-  .t-feats li{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:4px 0;color:var(--txt)}
+  .t-disc{font-family:var(--body);font-size:14px;font-weight:800;color:#06281c;background:linear-gradient(90deg,#10d98a,#22d3ee);padding:4px 10px;border-radius:8px;vertical-align:middle;letter-spacing:0}
+  .t-result{font-size:14px;color:#dbe0e8;margin:9px 0 17px;padding:11px 14px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--line)}
+  .t-feats{list-style:none;margin-bottom:17px}
+  .t-feats li{display:flex;gap:10px;align-items:flex-start;font-size:15px;padding:5px 0}
   .t-feats li.no{color:var(--mut)}
-  .t-feats .ic{flex:0 0 18px;font-weight:700}
-  .t-feats li .ic{color:var(--emerald)}
+  .t-feats .ic{flex:0 0 20px;font-weight:800;color:var(--emerald);font-size:16px}
   .t-feats li.no .ic{color:#5a5f6b}
-  .t-btn{width:100%;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;background:var(--accent)}
-  .tariff.base .t-btn{background:#3f434d}
-  .tariff.flow .t-btn{background:var(--blue)}
-  .tariff.popular .t-btn{background:linear-gradient(90deg,#8b5cf6,#a855f7)}
-  .tariff.vip .t-btn{background:linear-gradient(90deg,#10b981,#14b8a6)}
-  .t-more{width:100%;background:none;border:1px solid var(--line);color:var(--mut);border-radius:12px;padding:11px;font-size:13.5px;margin-top:8px;cursor:pointer}
-  .bonus-wrap{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.02));border:1px solid rgba(245,158,11,.25);border-radius:18px;padding:18px}
-  .bonus-top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
-  .bonus-top b{font-size:16px}
-  .bonus-top .val{margin-left:auto;color:var(--amber);font-weight:800;font-size:18px}
-  .bonus-sub{color:var(--mut);font-size:13px;margin-bottom:14px}
-  .bonus-item{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-  .bonus-item .e{font-size:20px;flex:0 0 26px;text-align:center}
-  .bonus-item b{font-size:14px;display:block}
-  .bonus-item span{color:var(--mut);font-size:12.5px}
-  .gloss{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-  .gloss summary{padding:14px 16px;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
-  .gloss summary::-webkit-details-marker{display:none}
-  .gloss summary .arr{margin-left:auto;color:var(--mut);transition:transform .2s}
-  .gloss[open] summary .arr{transform:rotate(180deg)}
-  .gloss .body{padding:0 16px 8px}
-  .gterm{padding:10px 0;border-top:1px solid var(--line)}
-  .gterm b{font-size:14px;color:var(--accent)}
-  .gterm p{font-size:13px;color:#cdd2db;margin-top:2px}
-  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+  .t-btn{width:100%;border:none;border-radius:14px;padding:16px;font-family:var(--disp);font-size:16px;font-weight:800;color:#06281c;cursor:pointer;
+    background:linear-gradient(95deg,#10d98a,#22d3ee);box-shadow:0 8px 24px rgba(16,217,138,.3);transition:transform .15s}
+  .t-btn:active{transform:scale(.98)}
+  .t-more{width:100%;background:none;border:1px solid var(--line);color:var(--mut);border-radius:14px;padding:13px;font-size:14px;margin-top:10px;cursor:pointer}
+
+  .bonus-wrap{background:linear-gradient(135deg,rgba(245,196,81,.12),rgba(245,196,81,.02));border:1.5px solid rgba(245,196,81,.32);border-radius:22px;padding:22px}
+  .bonus-top{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+  .bonus-top b{font-family:var(--disp);font-size:18px}
+  .bonus-top .val{margin-left:auto;font-family:var(--disp);color:var(--gold);font-weight:800;font-size:22px;text-shadow:0 0 20px rgba(245,196,81,.4)}
+  .bonus-sub{color:var(--mut);font-size:14px;margin-bottom:16px}
+  .bonus-item{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+  .bonus-item .e{font-size:24px;flex:0 0 32px;text-align:center}
+  .bonus-item b{font-family:var(--disp);font-size:15.5px;display:block;margin-bottom:2px;font-weight:700}
+  .bonus-item span{color:var(--mut);font-size:13.5px}
+
+  .disclaimer{font-size:13px;color:var(--mut);border-radius:12px;padding:13px 15px;margin-bottom:16px;line-height:1.5}
+  .res-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .res-scroll::-webkit-scrollbar{display:none}
+  .res-card{flex:0 0 78%;max-width:280px;scroll-snap-align:center;border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+  .res-imgwrap{position:relative;height:160px;cursor:pointer}
+  .res-imgwrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+  .res-ph{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800}
+  .res-ph .big{font-size:29px}
+  .res-ph .sm{font-size:13px;font-weight:600;opacity:.85;margin-top:3px}
+  .res-meta{padding:14px 16px}
+  .res-num{font-family:var(--disp);font-size:23px;font-weight:800;line-height:1.1}
+  .res-lbl{color:var(--mut);font-size:13px;margin-bottom:7px}
+  .res-name{font-size:15px;font-weight:700}
+  .res-loc{color:var(--mut);font-size:13px}
+  .hint{text-align:center;color:var(--mut);font-size:13px;margin:-4px 0 6px}
+  .site-link{display:block;text-align:center;color:var(--accent);font-size:14.5px;text-decoration:none;padding:13px;margin-top:4px;border:1px solid var(--line);border-radius:14px;font-weight:700;font-family:var(--disp)}
+
+  .promo-bar{margin:16px 18px 0;border-radius:20px;padding:20px;text-align:center;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(245,196,81,.2),rgba(16,217,138,.12));border:1.5px solid rgba(245,196,81,.5);
+    box-shadow:0 14px 44px rgba(245,196,81,.14)}
+  .promo-bar::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-20deg);animation:shine 4s infinite}
+  @keyframes shine{0%{left:-60%}55%,100%{left:140%}}
+  .promo-bar .pt{font-family:var(--disp);font-size:15px;font-weight:800;color:var(--gold)}
+  .promo-bar .timer{font-family:var(--disp);font-size:46px;font-weight:800;letter-spacing:1px;margin:8px 0;font-variant-numeric:tabular-nums;
+    background:linear-gradient(90deg,#f5c451,#10d98a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .promo-bar .ps{font-size:13.5px;color:#e3e7ee;font-weight:600}
+  .promo-bar.ended .timer{font-size:24px;-webkit-text-fill-color:var(--mut)}
+
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.74);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40;backdrop-filter:blur(3px)}
   .sheet-bg.on{opacity:1;pointer-events:auto}
-  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;background:var(--bg);border-radius:20px 20px 0 0;border-top:1px solid var(--line);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:41;padding:20px 18px 110px}
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;background:#0c0e11;border-radius:24px 24px 0 0;border-top:1px solid var(--line);transform:translateY(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1);z-index:41;padding:24px 20px 120px}
   .sheet.on{transform:translateY(0)}
-  .sheet-grab{width:40px;height:4px;border-radius:2px;background:#3a3f49;margin:0 auto 16px}
-  .sheet h3{font-size:21px;font-weight:800;margin-bottom:2px}
-  .sheet .ssub{color:var(--mut);font-size:13px;margin-bottom:14px}
-  .sheet .intro{font-size:14px;color:#cdd2db;margin-bottom:16px}
-  .sheet img.shot{width:100%;border-radius:12px;border:1px solid var(--line);margin:10px 0}
-  .sheet .blk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-  .sheet .blk h4{font-size:15px;margin-bottom:6px}
-  .sheet .blk p{font-size:13.5px;color:var(--mut)}
-  .sheet .blk ul{margin:6px 0 0 18px;font-size:13.5px;color:#cdd2db}
-  .sheet .blk li{margin-bottom:5px}
-  .sum{background:linear-gradient(135deg,rgba(59,130,246,.1),transparent);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:14px}
-  .sum h4{font-size:14px;margin-bottom:8px}
-  .sum li{font-size:13.5px;color:#cdd2db;margin:0 0 5px 18px}
-  .free{display:inline-block;background:rgba(16,185,129,.18);color:#6ee7b7;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:6px}
-  .viewer{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:60;display:none;align-items:center;justify-content:center;padding:16px}
+  .sheet-grab{width:44px;height:5px;border-radius:3px;background:#3a3f49;margin:0 auto 18px}
+  .sheet h3{font-family:var(--disp);font-size:25px;font-weight:800;margin-bottom:3px}
+  .sheet .ssub{color:var(--mut);font-size:14px;margin-bottom:16px}
+  .sheet .intro{font-size:15px;color:#e3e7ee;margin-bottom:18px}
+  .sheet .blk{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px}
+  .sheet .blk h4{font-family:var(--disp);font-size:16px;margin-bottom:7px}
+  .sheet .blk p{font-size:14.5px;color:var(--mut)}
+  .sheet .blk ul{margin:7px 0 0 18px;font-size:14.5px;color:#e3e7ee}
+  .sheet .blk li{margin-bottom:6px}
+  .sum{background:linear-gradient(135deg,rgba(16,217,138,.14),transparent);border:1px solid rgba(16,217,138,.28);border-radius:16px;padding:16px}
+  .sum h4{font-family:var(--disp);font-size:15px;margin-bottom:9px}
+  .sum li{font-size:14.5px;color:#e3e7ee;margin:0 0 6px 18px}
+  .free{display:inline-block;background:rgba(16,217,138,.2);color:#6ee7b7;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:7px;margin-left:6px}
+
+  .viewer{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:60;display:none;align-items:center;justify-content:center;padding:16px}
   .viewer.on{display:flex}
-  .viewer img{max-width:100%;max-height:90vh;border-radius:8px}
-  .viewer .x{position:absolute;top:14px;right:18px;color:#fff;font-size:30px;cursor:pointer}
-  .cta-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(12,13,16,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:12px 16px;z-index:30}
-  .cta-bar .inner{max-width:680px;margin:0 auto;display:flex;gap:10px}
-  .cta-main{flex:1;background:linear-gradient(90deg,#10b981,#14b8a6);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
-  .cta-site{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:13px;padding:14px 16px;font-size:14px;cursor:pointer}
-  .promo-bar{margin:12px 16px 0;background:linear-gradient(135deg,rgba(244,63,94,.16),rgba(245,158,11,.12));border:1px solid rgba(244,63,94,.4);border-radius:16px;padding:14px 16px;text-align:center}
-  .promo-bar .pt{font-size:14px;font-weight:700;color:#fda4af}
-  .promo-bar .timer{font-size:30px;font-weight:800;letter-spacing:1px;margin:6px 0;font-variant-numeric:tabular-nums}
-  .promo-bar .ps{font-size:12.5px;color:var(--mut)}
-  .promo-bar.ended .timer{font-size:18px;color:var(--mut)}
+  .viewer img{max-width:100%;max-height:90vh;border-radius:10px}
+  .viewer .x{position:absolute;top:14px;right:18px;color:#fff;font-size:34px;cursor:pointer}
+
+  .cta-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(7,8,9,.9);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:13px 16px 16px;z-index:30}
+  .cta-bar .inner{max-width:680px;margin:0 auto}
+  .cta-main{width:100%;position:relative;overflow:hidden;background:linear-gradient(95deg,#f5c451,#10d98a);color:#06281c;border:none;border-radius:16px;padding:17px;font-family:var(--disp);font-size:17px;font-weight:800;cursor:pointer;line-height:1.25;
+    box-shadow:0 8px 30px rgba(16,217,138,.35);animation:breathe 2.6s ease-in-out infinite}
+  .cta-main::before{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 3.4s infinite}
+  .cta-main .cta-sub{display:block;font-family:var(--body);font-size:12.5px;font-weight:700;opacity:.82;margin-top:2px}
+  @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 8px 30px rgba(16,217,138,.35)}50%{transform:scale(1.018);box-shadow:0 10px 38px rgba(16,217,138,.5)}}
+
+  @media(max-width:380px){.hero h1{font-size:28px}.section-h h2{font-size:21px}.promo-bar .timer{font-size:38px}}
 </style>
 </head>
 <body>
-<div class="hero"><h1>Amazon с Вадимом</h1><p>Программы обучения, результаты учеников и бонусы</p></div>
+<div class="hero">
+  <div class="kicker">Бизнес на Amazon</div>
+  <h1>Amazon с <span class="grad">Вадимом</span></h1>
+  <p>Форматы старта, поддержка и реальные результаты</p>
+</div>
 <div id="promoBar" style="display:none"></div>
 <div class="wrap">
-  <div class="section-h"><span class="bar" style="background:var(--emerald)"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
-  <p class="hint">← листайте карточки →</p>
-  <div class="res-scroll" id="resScroll"></div>
-  <div class="section-h"><span class="bar" style="background:var(--violet)"></span><h2>Программы обучения</h2></div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Как проходит работа</h2></div>
+  <div class="inside" id="inside"></div>
+
+  <div class="promise reveal">
+    <div class="ttl"><span class="e">🤝</span> Мы не бросаем на полпути</div>
+    <p>Главное отличие: мы <span class="hl">на связи и ведём вас до первых реальных продаж</span>. Не «вот вам уроки, дальше сами» — мы разбираем ваши вопросы, смотрим вашу ситуацию и помогаем пройти каждый шаг. Пока не увидите первый результат.</p>
+  </div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Почему с нами</h2></div>
+  <div class="why" id="why"></div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Сам или с нами</h2></div>
+  <div class="vs glass reveal"><div class="vs-head"><div class="h-lbl"></div><div class="h-self">Самому</div><div class="h-us">С нами</div></div><div id="vsRows"></div></div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Путь до первых продаж</h2></div>
+  <div class="road" id="road"></div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Форматы старта</h2></div>
   <div id="tariffs"></div>
-  <div class="section-h"><span class="bar" style="background:var(--amber)"></span><h2>Бонусы в подарок</h2></div>
-  <div class="bonus-wrap">
-    <div class="bonus-top"><b>Входят бесплатно в каждый тариф</b><span class="val">~$1839</span></div>
-    <div class="bonus-sub">Это готовые инструменты и инструкции — простыми словами ниже.</div>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Бонусы-инструменты</h2></div>
+  <div class="bonus-wrap reveal">
+    <div class="bonus-top"><b>Входят бесплатно в любой формат</b><span class="val">~$1839</span></div>
+    <div class="bonus-sub">Готовые помощники для старта — простыми словами:</div>
     <div id="bonuses"></div>
   </div>
-  <div class="section-h"><span class="bar" style="background:var(--cyan)"></span><h2>Непонятные слова?</h2></div>
-  <details class="gloss"><summary>Короткий словарь Amazon простыми словами <span class="arr">▾</span></summary><div class="body" id="gloss"></div></details>
+
+  <div class="section-h reveal"><span class="bar"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
+  <div class="disclaimer glass reveal">Это не обещание результата. Цифры зависят от бюджета, времени, выбранных товаров и того, насколько человек выполняет шаги.</div>
+  <p class="hint">← листайте карточки →</p>
+  <div class="res-scroll" id="resScroll"></div>
+  <a class="site-link reveal" id="siteLink" href="#">Больше историй и отзывов — на сайте →</a>
+
+  <div style="height:30px"></div>
 </div>
+
 <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
-<div class="cta-bar"><div class="inner"><button class="cta-main" onclick="book()">Записаться на разбор</button><button class="cta-site" onclick="openSite()">Сайт</button></div></div>
+<div class="cta-bar"><div class="inner"><button class="cta-main" id="ctaMain" onclick="book()">🎁 Получить спец-цену в подарок<span class="cta-sub">−20% на 24 часа · нажми — цены обновятся</span></button></div></div>
+
 <script>
 const TG = window.Telegram ? window.Telegram.WebApp : null;
 if (TG) { TG.ready(); TG.expand(); }
@@ -152,11 +256,52 @@ const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const DEADLINE = parseInt(params.get('deadline')||'0',10);
 const DISCOUNT = params.get('discount') || '';
-const DISC = parseInt(params.get('disc')||'0',10);  // процент скидки
+const DISC = parseInt(params.get('disc')||'0',10);
 const PROMO_ON = DEADLINE > Math.floor(Date.now()/1000) && DISC > 0;
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
-const FLAGS = {"Германия":"\uD83C\uDDE9\uD83C\uDDEA","США":"\uD83C\uDDFA\uD83C\uDDF8","Польша":"\uD83C\uDDF5\uD83C\uDDF1","Италия":"\uD83C\uDDEE\uD83C\uDDF9","Испания":"\uD83C\uDDEA\uD83C\uDDF8","Чехия":"\uD83C\uDDE8\uD83C\uDDFF","Европа":"\uD83C\uDDEA\uD83C\uDDFA","Австрия":"\uD83C\uDDE6\uD83C\uDDF9","Нидерланды":"\uD83C\uDDF3\uD83C\uDDF1","Франция":"\uD83C\uDDEB\uD83C\uDDF7","Ирландия":"\uD83C\uDDEE\uD83C\uDDEA","Португалия":"\uD83C\uDF0D","Канада":"\uD83C\uDF0D"};
-const COLORS = {emerald:"#10b981",violet:"#8b5cf6",amber:"#f59e0b",blue:"#3b82f6",rose:"#f43f5e",cyan:"#06b6d4",orange:"#f97316",teal:"#14b8a6",indigo:"#6366f1",pink:"#ec4899"};
+
+document.getElementById('siteLink').href = SITE;
+document.getElementById('siteLink').onclick = function(e){e.preventDefault();if(TG&&TG.openLink){TG.openLink(SITE);}else{window.open(SITE,'_blank');}};
+
+const FLAGS = {"Германия":"\uD83C\uDDE9\uD83C\uDDEA","США":"\uD83C\uDDFA\uD83C\uDDF8","Польша":"\uD83C\uDDF5\uD83C\uDDF1","Италия":"\uD83C\uDDEE\uD83C\uDDF9","Испания":"\uD83C\uDDEA\uD83C\uDDF8","Европа":"\uD83C\uDDEA\uD83C\uDDFA","Франция":"\uD83C\uDDEB\uD83C\uDDF7","Ирландия":"\uD83C\uDDEE\uD83C\uDDEA","Португалия":"\uD83C\uDF0D","Канада":"\uD83C\uDF0D"};
+const COLORS = {emerald:"#10d98a",violet:"#a78bfa",amber:"#fbbf24",blue:"#60a5fa",rose:"#fb7185",cyan:"#22d3ee",orange:"#fb923c",teal:"#2dd4bf",indigo:"#818cf8",pink:"#f472b6"};
+
+const INSIDE = [
+  {e:"📋",n:"Пошаговая система",d:"От регистрации до первых продаж — по порядку"},
+  {e:"🔍",n:"Проверка товаров",d:"Считаем выгоду ещё до того, как вложить деньги"},
+  {e:"🤝",n:"Поставщики и документы",d:"Где брать товар и как пройти проверки Amazon"},
+  {e:"💬",n:"Поддержка и разбор",d:"Мы рядом и отвечаем на вопросы по ходу"},
+  {e:"🧰",n:"Инструменты для старта",d:"Готовые помощники — бесплатно, в подарок"}
+];
+const WHY = [
+  {e:"🛠",n:"Авторские программы",d:"Инструменты, которые мы сами используем в своей команде каждый день"},
+  {e:"🤝",n:"Не бросаем на полпути",d:"Остаёмся на связи, а не пропадаем после оплаты"},
+  {e:"🎯",n:"Доводим до продаж",d:"Цель — ваш первый реальный результат, а не «прошёл курс»"},
+  {e:"👶",n:"Опыт с новичками",d:"Ведём даже тех, кто не знает, как перезапустить компьютер"},
+  {e:"📞",n:"Созвоны + поддержка",d:"Раз в неделю под запись и поддержка целых 3 месяца"}
+];
+const VS = [
+  {l:"Запуск",self:"месяцы проб",us:"за недели по шагам"},
+  {l:"Поиск товара",self:"наугад",us:"проверяем выгоду заранее"},
+  {l:"Цена ошибок",self:"теряешь на первой закупке",us:"проверяем до закупки"},
+  {l:"Поддержка",self:"гуглишь один",us:"мы на связи 3 месяца"},
+  {l:"Результат",self:"часто бросают",us:"доводим до продаж"}
+];
+const ROAD = [
+  {n:"1",t:"Настройка",d:"Регистрируем компанию и аккаунт Amazon без ошибок, из-за которых блокируют новичков."},
+  {n:"2",t:"Поиск товара",d:"Учимся находить товары, которые уже покупают — и считаем прибыль заранее."},
+  {n:"3",t:"Поставщики",d:"Выходим на поставщиков, проходим их проверки и оформляем документы."},
+  {n:"4",t:"Закупка и проверка",d:"Проверяем товар до закупки, чтобы не вложить деньги впустую."},
+  {n:"5",t:"Отправка на Amazon",d:"Делаем первую поставку правильно — товар попадает на склады Amazon."},
+  {n:"6",t:"Первые продажи",d:"Доводим до первых реальных продаж. Здесь мы особенно плотно на связи."}
+];
+const BONUSES = [
+  {e:"🔓",n:"Разрешение продавать больше товаров",d:"Помогаем открыть доступ к брендам, что закрыты для новичков"},
+  {e:"📄",n:"Поставщики и документы",d:"Как выбрать поставщика, какие нужны бумаги и как не попасть на мусор"},
+  {e:"🔎",n:"Поиск товаров",d:"Готовые способы находить то, что уже покупают"},
+  {e:"🤖",n:"Проверка товара",d:"Инструмент: можно ли вообще продавать этот товар"},
+  {e:"📊",n:"Контроль цены",d:"Инструмент: держит цену так, чтобы не уйти в минус"}
+];
 const STUDENTS = [
 {name:"Измаил",loc:"Германия",mkt:"Amazon Германия",res:"€472,956",lbl:"продажи",img:"izmail-result.png",c:"amber"},
 {name:"Алексей",loc:"США",mkt:"Amazon США",res:"$65,887",lbl:"за месяц",img:"alexey-result.png",c:"emerald"},
@@ -170,170 +315,82 @@ const STUDENTS = [
 {name:"Андрей",loc:"Португалия",mkt:"Amazon США",res:"$2,170",lbl:"продажи",img:"andrey-result.png",c:"teal"},
 {name:"Марина",loc:"Канада",mkt:"Amazon Канада",res:"1870 CAD",lbl:"за месяц",img:"marina-result.png",c:"indigo"},
 {name:"Александр",loc:"Испания",mkt:"Amazon США",res:"316 шт",lbl:"продано",img:"alexander-result.png",c:"pink"},
-{name:"Ученик",loc:"Германия",mkt:"Amazon США",res:"$1,279",lbl:"за месяц",img:"anonymous-result.png",c:"emerald"},
+{name:"Анонимно",loc:"Германия",mkt:"Amazon США",res:"$1,279",lbl:"за месяц",img:"anonymous-result.png",c:"emerald"},
 {name:"Дария",loc:"Италия",mkt:"Amazon Италия",res:"€485",lbl:"сегодня",img:"daria-result.png",c:"violet"},
 {name:"Денис",loc:"Польша",mkt:"Amazon США",res:"$236",lbl:"первая неделя",img:"denis-result.png",c:"amber"},
 {name:"Никита",loc:"Германия",mkt:"Amazon Германия",res:"€114",lbl:"за неделю",img:"nikita-result.png",c:"blue"},
 {name:"Игорь",loc:"Италия",mkt:"Amazon Италия",res:"€1,500+",lbl:"за месяц",img:"igor-result.png",c:"rose"},
-{name:"Игорь",loc:"США",mkt:"Amazon США",res:"$4,503",lbl:"за месяц",img:"igor2-result.png",c:"cyan"},
+{name:"Анонимно",loc:"США",mkt:"Amazon США",res:"$4,503",lbl:"за месяц",img:"igor2-result.png",c:"cyan"},
 {name:"Андрей",loc:"Ирландия",mkt:"Amazon США",res:"$9,516",lbl:"продажи",img:"andrey2-result.png",c:"orange"}
 ];
-const BONUSES = [
-{e:"\uD83D\uDD13",n:"Ангейтинг",d:"Разрешение продавать бренды, закрытые для новичков"},
-{e:"\uD83D\uDCC4",n:"Поставщик и документы",d:"Как выбрать поставщика и оформить бумаги для Amazon"},
-{e:"\uD83D\uDD0E",n:"Поиск товаров",d:"Готовые способы находить, что выгодно продавать"},
-{e:"\uD83E\uDD16",n:"ASIN Checker",d:"Программа: проверяет, можно ли вам продавать товар"},
-{e:"\uD83D\uDCCA",n:"Репрайсер",d:"Программа сама держит вашу цену выгодной"}
-];
-const GLOSSARY = [
-{t:"Amazon FBA",d:"Модель, где Amazon сам хранит ваш товар, упаковывает и доставляет покупателю. Вы только привозите товар на их склад."},
-{t:"Seller Central",d:"Личный кабинет продавца на Amazon — как админка вашего магазина. Скрины результатов выше — как раз оттуда."},
-{t:"Листинг (карточка товара)",d:"Готовая страница товара на Amazon. Вы «прикрепляетесь» к ней и продаёте тот же товар — не нужно создавать с нуля."},
-{t:"Поставщик / оптовик",d:"Компания, у которой вы закупаете товар оптом дешевле, чтобы продать на Amazon дороже."},
-{t:"Ангейтинг",d:"Получение разрешения продавать бренд, который Amazon закрыл для новичков. После него вам доступно больше товаров."},
-{t:"Инвойс",d:"Официальный счёт-документ от поставщика. Amazon просит его, чтобы убедиться, что товар настоящий."},
-{t:"Преп-центр",d:"Склад-посредник: принимает ваш товар, готовит по правилам Amazon (упаковка, наклейки) и отправляет на склад Amazon. Стоит ~$1 за единицу."},
-{t:"ROI",d:"Возврат на вложения. ROI 20% значит: вложили $100 — вернули $120. Чем выше, тем выгоднее товар."},
-{t:"Юнит-экономика",d:"Простой расчёт: сколько вы заработаете с одной продажи после всех расходов (закупка, доставка, комиссии)."},
-{t:"Репрайсер",d:"Программа, которая сама подстраивает вашу цену — чтобы выигрывать продажи и не терять прибыль."},
-{t:"Оборот",d:"Сумма всех продаж за месяц. Это НЕ чистая прибыль — прибыль остаётся после вычета расходов."},
-{t:"CRM",d:"Программа для учёта клиентов, задач и контроля бизнеса. Нужна, когда дел становится много."}
-];
 const TARIFFS = [
-{id:"base",cls:"base",name:"Обучаюсь сам",sub:"Самостоятельное обучение",price:671,result:"Понимание процесса + старт без наставника",
- feats:[["Все 75 видео-уроков",1],["Программы-помощники",1],["Доступ навсегда",1],["Записи 9 онлайн-встреч",1],["Личные созвоны с Вадимом",0]],
- cta:"Начать обучение",
- detail:{intro:"После оплаты — полный доступ к платформе с видеоуроками и заданиями. Учитесь в своём темпе.",
-  blocks:[
-   {h:"Как выглядит курс",p:"75 видеоуроков с домашними заданиями — от регистрации до первых продаж."},
-   {h:"Программа ASIN Checker",free:1,p:"Проверяет, разрешит ли Amazon продавать конкретный товар. Без неё легко купить то, что потом нельзя выставить. Доступ навсегда, обычно стоит $350."},
-   {h:"Записи 9 онлайн-встреч прошлых групп",p:"Полные записи групповых созвонов — там разбирают все шаги: регистрация, поиск товаров, отправка на Amazon."},
-   {h:"Поддержка в чате — 1 месяц",p:"Любой вопрос по Amazon — пишете в чат, получаете ответ. Личных созвонов в этом тарифе нет."}],
-  summary:["Платформа с 75 видеоуроками","Все бонусы ($1839 в подарок)","Записи 9 онлайн-встреч","1 месяц поддержки в чате"]}},
-{id:"flow",cls:"flow",name:"Поток",sub:"Групповое обучение",price:975,result:"Первые продажи + понимание всего процесса",
- feats:[["Все 75 видео-уроков",1],["9 онлайн-встреч в группе",1],["2 личных созвона",1],["1 проверенный поставщик",1],["Поддержка в чате 24/7",1]],
- cta:"Забронировать место",
- detail:{intro:"За 1 месяц — пошаговая система запуска под руководством Вадима, вместо месяцев самостоятельных проб.",
-  blocks:[
-   {h:"Видео-курс",p:"75 уроков + задания. Доступ к платформе сразу после оплаты."},
-   {h:"Программа ASIN Checker",free:1,p:"Проверяет, можно ли продавать товар. Обычно $350 — для вас бесплатно."},
-   {h:"9 онлайн-встреч в группе",img:"flow-call-1.png",ul:["Раз в неделю по расписанию","Можно задавать любые вопросы вживую","Все встречи записываются — пропустили, посмотрите запись","Время подбирается под группу"]},
-   {h:"Что разбираем на встречах",ul:["Регистрация компании (ЕС или США) и аккаунта","Где искать надёжных поставщиков","Как выбирать прибыльные товары и считать прибыль","Подготовка товара и отправка на склад Amazon","Контроль цифр и как наращивать обороты"]},
-   {h:"1 проверенный поставщик для старта",p:"Поставщик, у которого можно сразу закупиться на старте — не нужно искать вслепую."}],
-  summary:["Видео-курс (75 уроков)","Все бонусы ($1839)","9 онлайн-встреч по плану","2 личных созвона","3 месяца поддержки после","Доводим до первых продаж, если выполняете шаги"]}},
-{id:"advanced",cls:"popular",name:"Продвинутый",sub:"С личным наставничеством",price:1455,result:"Стабильные продажи + выстроенная система",badge:"ПОПУЛЯРНЫЙ",badgeCls:"pop",
+{id:"base",cls:"base",name:"Обучаюсь сам",sub:"Самостоятельный старт",price:750,result:"Понимаете процесс и стартуете в своём темпе",
+ feats:[["Все 75 видео-уроков",1],["Инструменты-помощники",1],["Доступ навсегда",1],["Записи 9 онлайн-встреч",1],["Личные созвоны с Вадимом",0]],
+ detail:{intro:"Вы получаете доступ к урокам и материалам и проходите всё в своём темпе.",
+  blocks:[{h:"Видео-курс",p:"75 уроков с заданиями — от регистрации до первых продаж."},{h:"Проверка товара",free:1,p:"Инструмент, который подсказывает, можно ли продавать конкретный товар. Доступ навсегда."},{h:"Записи 9 онлайн-встреч",p:"Полные записи групповых занятий прошлых групп — все шаги разобраны."},{h:"Поддержка в чате — 1 месяц",p:"Вопрос по Amazon — пишете в чат, отвечаем. Личных созвонов в этом формате нет."}],
+  summary:["75 видео-уроков","Все бонусы-инструменты ($1839)","Записи 9 онлайн-встреч","1 месяц поддержки"]}},
+{id:"flow",cls:"flow",name:"Поток",sub:"Обучение в группе",price:1100,result:"Доходите до первых продаж вместе с группой",
+ feats:[["Все 75 видео-уроков",1],["9 онлайн-встреч в группе",1],["2 личных созвона",1],["1 проверенный поставщик",1],["Поддержка в чате",1]],
+ detail:{intro:"За месяц проходите систему вместе с группой и с нами — вместо месяцев проб в одиночку.",
+  blocks:[{h:"Видео-курс",p:"75 уроков + задания, доступ сразу."},{h:"9 онлайн-встреч в группе",ul:["Раз в неделю по расписанию","Можно задавать любые вопросы вживую","Все встречи записываются","Время подбирается под группу"]},{h:"Что разбираем",ul:["Регистрация компании и аккаунта","Где искать поставщиков","Как выбирать товары и считать прибыль","Отправка товара на склад Amazon","Как наращивать обороты"]},{h:"1 проверенный поставщик",p:"Поставщик, у которого можно сразу закупиться — не вслепую."}],
+  summary:["Видео-курс (75 уроков)","Все бонусы ($1839)","9 онлайн-встреч","2 личных созвона","Поддержка после","Ведём до первых продаж"]}},
+{id:"advanced",cls:"popular",name:"Продвинутый",sub:"С личным наставничеством",price:1700,result:"Стабильные продажи и выстроенная система",badge:"ПОПУЛЯРНЫЙ",badgeCls:"pop",
  feats:[["Всё из «Обучаюсь сам»",1],["4 личных созвона по 1.5ч",1],["3 поставщика для старта",1],["Выбор рынка: США или Европа",1],["4 месяца поддержки",1]],
- cta:"Начать обучение",
- detail:{intro:"Всё из «Обучаюсь сам» + личная работа с Вадимом и готовые поставщики для быстрого старта.",
-  blocks:[
-   {h:"3 поставщика для старта",p:"3 оптовика, которые одобрят ваш аккаунт. С возможностью закупиться от $4,000 и заработать от 20% сверху (вложили $4,000 — вернули ~$4,800+)."},
-   {h:"4 личных созвона по 1.5 часа",p:"Вадим разбирает лично ваш кабинет и вашу ситуацию — отвечает на любые вопросы здесь и сейчас."},
-   {h:"4 месяца поддержки в чате",p:"Любой вопрос по Amazon — ответ от Вадима."},
-   {h:"Также входит",ul:["9 записей групповых встреч","Доводим до первых продаж","Старт сразу, без ожидания группы","Все 75 видео-уроков","Выбор рынка: США или Европа"]}],
-  summary:["Всё из базового тарифа","4 личных созвона","3 поставщика для старта","Выбор рынка США/ЕС","4 месяца поддержки","Все бонусы ($1839)"]}},
-{id:"pro",cls:"vip",name:"Про уровень",sub:"Бизнес под ключ",price:4200,result:"Бизнес под ключ, цель — $15 000+ продаж в месяц",badge:"VIP",badgeCls:"vip",
- feats:[["Всё из «Продвинутого»",1],["12 личных созвонов",1],["10 поставщиков + 50 товаров",1],["Сайт + CRM + система продаж",1],["6 месяцев личной поддержки",1]],
- cta:"Забронировать VIP",
- detail:{intro:"Максимальное сопровождение. Большую часть работы делаем вместе с вами, цель — выйти на $15 000+ продаж в месяц.",
-  blocks:[
-   {h:"Масштаб сопровождения",ul:["12 личных созвонов с Вадимом","10 поставщиков + помощь с выбором 50 товаров","6 месяцев личной поддержки"]},
-   {h:"VIP-эксклюзив — подарок на $3,000+",free:1,ul:["Личный сайт (обычно от $1,500) — для привлечения клиентов, с приёмом оплаты","CRM-система под вас (обычно от $1,500) — программа для учёта поставщиков, задач и контроля бизнеса"]},
-   {h:"Цель",p:"$15 000+ продаж в месяц. Это оборот (сумма всех продаж), не чистая прибыль. Бизнес выстраиваем под ключ."}],
-  summary:["Всё из «Продвинутого»","12 личных созвонов","10 поставщиков + 50 товаров","Личный сайт + CRM ($3,000+ в подарок)","6 месяцев поддержки","Цель — $15 000+ продаж/мес"]}}
+ detail:{intro:"Всё из самостоятельного формата + личная работа с нами и готовые поставщики.",
+  blocks:[{h:"3 поставщика для старта",p:"3 оптовика, которые одобрят ваш аккаунт. Можно закупиться от $4,000 и заработать сверху около 20%."},{h:"4 личных созвона по 1.5 часа",p:"Разбираем лично ваш кабинет и вашу ситуацию — отвечаем на всё здесь и сейчас."},{h:"4 месяца поддержки",p:"Любой вопрос по Amazon — пишете нам, отвечаем."},{h:"Также входит",ul:["9 записей групповых встреч","Старт сразу, без ожидания группы","Все 75 видео-уроков","Выбор рынка: США или Европа"]}],
+  summary:["Всё из базового формата","4 личных созвона","3 поставщика","Выбор рынка США/ЕС","4 месяца поддержки","Все бонусы ($1839)"]}},
+{id:"pro",cls:"vip",name:"Под ключ",sub:"Максимальный формат",price:4200,result:"Бизнес под ключ, цель — $15 000+ продаж в месяц",badge:"ПОД КЛЮЧ",badgeCls:"vip",
+ feats:[["Всё из «Продвинутого»",1],["12 личных созвонов",1],["10 поставщиков + 50 товаров",1],["Сайт + система учёта",1],["6 месяцев поддержки",1]],
+ detail:{intro:"Максимальное сопровождение. Большую часть делаем вместе с вами, цель — выйти на $15 000+ продаж в месяц.",
+  blocks:[{h:"Масштаб сопровождения",ul:["12 личных созвонов с нами","10 поставщиков + помощь с выбором 50 товаров","6 месяцев плотной поддержки"]},{h:"Под ключ — подарок на $3,000+",free:1,ul:["Личный сайт для привлечения клиентов (обычно от $1,500)","Система учёта под вас (обычно от $1,500)"]},{h:"Цель",p:"$15 000+ продаж в месяц. Это оборот (сумма всех продаж), не чистая прибыль. Бизнес выстраиваем вместе, под ключ."}],
+  summary:["Всё из «Продвинутого»","12 личных созвонов","10 поставщиков + 50 товаров","Сайт + система учёта ($3,000+)","6 месяцев поддержки","Цель — $15 000+/мес"]}}
 ];
-document.getElementById('resCnt').textContent = STUDENTS.length + " учеников";
-document.getElementById('resScroll').innerHTML = STUDENTS.map(function(s){
-  var col = COLORS[s.c]||'#fff';
-  return '<div class="res-card"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)">'+
-    '<div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div>'+
-    '<img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div>'+
-    '<div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div>'+
-    '<div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div>'+
-    '<div class="res-loc">'+s.mkt+'</div></div></div>';
-}).join('');
-document.getElementById('tariffs').innerHTML = TARIFFS.map(function(t,i){
-  var badge = t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
-  var feats = t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
-  var priceHtml;
-  if(PROMO_ON){
-    priceHtml = '<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> '+
-      '<span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> '+
-      '<span class="t-disc">−'+DISC+'%</span></div>';
-  } else {
-    priceHtml = '<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
-  }
-  var btnLabel = PROMO_ON ? 'Оформить со скидкой' : t.cta;
-  return '<div class="tariff '+t.cls+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+
-    priceHtml+'<div class="t-result">'+t.result+'</div>'+
-    '<ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button>'+
-    '<button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
-}).join('');
-document.getElementById('bonuses').innerHTML = BONUSES.map(function(b){
-  return '<div class="bonus-item"><span class="e">'+b.e+'</span><div><b>'+b.n+'</b><span>'+b.d+'</span></div></div>';
-}).join('');
-document.getElementById('gloss').innerHTML = GLOSSARY.map(function(g){
-  return '<div class="gterm"><b>'+g.t+'</b><p>'+g.d+'</p></div>';
-}).join('');
-function openSheet(i){
-  var t = TARIFFS[i], d = t.detail;
-  var priceStr = PROMO_ON
-    ? '$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')'
-    : '$'+t.price.toLocaleString();
-  var html = '<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3>'+
-    '<div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
-  d.blocks.forEach(function(b){
-    html += '<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';
-    if(b.img) html += '<img class="shot" src="'+b.img+'" onerror="this.remove()" onclick="viewImg(\''+b.img+'\')">';
-    if(b.p) html += '<p>'+b.p+'</p>';
-    if(b.ul) html += '<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
-    html += '</div>';
-  });
-  html += '<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
-  document.getElementById('sheetBody').innerHTML = html;
-  document.getElementById('sheet').classList.add('on');
-  document.getElementById('sheetBg').classList.add('on');
-}
-function closeSheet(){document.getElementById('sheet').classList.remove('on');document.getElementById('sheetBg').classList.remove('on');}
-function viewImg(src){document.getElementById('viewerImg').src = src;document.getElementById('viewer').classList.add('on');}
-function book(){
-  // если активно промо — ведём на скидочную страницу, иначе на разбор
-  var target = (DEADLINE > Math.floor(Date.now()/1000) && DISCOUNT) ? DISCOUNT : CONTACT;
-  if(TG && TG.openLink && target===DISCOUNT){ TG.openLink(target); }
-  else if(TG && TG.openTelegramLink && target===CONTACT){ TG.openTelegramLink(CONTACT); }
-  else { window.open(target,'_blank'); }
-}
-function openSite(){if(TG && TG.openLink){TG.openLink(SITE);}else{window.open(SITE,'_blank');}}
 
-// ---- промо-таймер ----
+var $=function(id){return document.getElementById(id);};
+$('inside').innerHTML = INSIDE.map(function(x,i){var w=(i===INSIDE.length-1&&INSIDE.length%2===1)?' wide':'';return '<div class="in-card glass reveal'+w+'"><div class="e">'+x.e+'</div><b>'+x.n+'</b><span>'+x.d+'</span></div>';}).join('');
+$('why').innerHTML = WHY.map(function(w){return '<div class="why-item glass reveal"><div class="n">'+w.e+'</div><div><b>'+w.n+'</b><span>'+w.d+'</span></div></div>';}).join('');
+$('vsRows').innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
+$('road').innerHTML = ROAD.map(function(s){return '<div class="step-r reveal"><div class="num">'+s.n+'</div><div class="body"><b>'+s.t+'</b><p>'+s.d+'</p></div></div>';}).join('');
+$('bonuses').innerHTML = BONUSES.map(function(b){return '<div class="bonus-item"><span class="e">'+b.e+'</span><div><b>'+b.n+'</b><span>'+b.d+'</span></div></div>';}).join('');
+$('resCnt').textContent = STUDENTS.length+" учеников";
+$('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
+
+$('tariffs').innerHTML = TARIFFS.map(function(t,i){
+  var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
+  var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
+  var priceHtml=PROMO_ON?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div>':'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
+  var btnLabel=PROMO_ON?'Забрать со скидкой':'Выбрать этот формат';
+  return '<div class="tariff glass reveal '+t.cls+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
+}).join('');
+
+function openSheet(i){
+  var t=TARIFFS[i],d=t.detail;
+  var priceStr=PROMO_ON?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
+  var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
+  d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
+  html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+  $('sheetBody').innerHTML=html;$('sheet').classList.add('on');$('sheetBg').classList.add('on');
+}
+function closeSheet(){$('sheet').classList.remove('on');$('sheetBg').classList.remove('on');}
+function viewImg(src){$('viewerImg').src=src;$('viewer').classList.add('on');}
+function book(){var target=(PROMO_ON&&DISCOUNT)?DISCOUNT:CONTACT;if(target===DISCOUNT){if(TG&&TG.openLink){TG.openLink(target);}else{window.open(target,'_blank');}}else{if(TG&&TG.openTelegramLink){TG.openTelegramLink(CONTACT);}else{window.open(CONTACT,'_blank');}}}
+
+// reveal-on-scroll
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
 (function initPromo(){
-  if(!DEADLINE) return;
-  var bar = document.getElementById('promoBar');
-  var main = document.querySelector('.cta-main');
-  bar.className = 'promo-bar';
-  bar.style.display = 'block';
+  if(!DEADLINE)return;
+  var bar=$('promoBar'),main=$('ctaMain');
+  bar.className='promo-bar';bar.style.display='block';
   function render(){
-    var left = DEADLINE - Math.floor(Date.now()/1000);
-    if(left <= 0){
-      bar.className = 'promo-bar ended';
-      bar.innerHTML = '<div class="pt">Скидка завершена</div><div class="timer">Время вышло</div><div class="ps">Можно записаться на разбор по обычной цене</div>';
-      if(main) main.textContent = 'Записаться на разбор';
-      clearInterval(t);
-      return;
-    }
-    var h=Math.floor(left/3600), m=Math.floor((left%3600)/60), s=left%60;
-    var pad=function(n){return (n<10?'0':'')+n;};
-    bar.innerHTML = '<div class="pt">🔥 Ваша скидка + личный созвон в подарок</div>'+
-      '<div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div>'+
-      '<div class="ps">Успейте оформить — после таймера обычная цена</div>';
-    if(main) main.textContent = 'Оформить со скидкой';
+    var left=DEADLINE-Math.floor(Date.now()/1000);
+    if(left<=0){bar.className='promo-bar ended';bar.innerHTML='<div class="pt">Спец-цена завершена</div><div class="timer">Время вышло</div><div class="ps">Можно написать и обсудить варианты</div>';if(main)main.innerHTML='Написать Вадиму';clearInterval(t);return;}
+    var h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60,pad=function(n){return(n<10?'0':'')+n;};
+    bar.innerHTML='<div class="pt">🔥 Ваша спец-цена −'+DISC+'% активна</div><div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div><div class="ps">Цены ниже уже со скидкой · бонусом — личный разбор с Вадимом</div>';
+    if(main)main.innerHTML='Забрать спец-цену со скидкой<span class="cta-sub">−'+DISC+'% · осталось '+pad(h)+':'+pad(m)+':'+pad(s)+'</span>';
   }
-  render();
-  var t = setInterval(render, 1000);
-  // при активном промо прячем кнопку «Сайт» — остаётся одна «Оформить со скидкой»
-  if(DEADLINE > Math.floor(Date.now()/1000)){
-    var siteBtn = document.querySelector('.cta-site');
-    if(siteBtn) siteBtn.style.display = 'none';
-  }
+  render();var t=setInterval(render,1000);
 })();
 </script>
 </body>
