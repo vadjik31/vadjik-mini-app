@@ -139,6 +139,8 @@
   .t-more{width:100%;background:none;border:1px solid var(--line);color:var(--mut);border-radius:14px;padding:13px;font-size:14px;margin-top:10px;cursor:pointer}
 
   .bonus-wrap{background:linear-gradient(135deg,rgba(245,196,81,.12),rgba(245,196,81,.02));border:1.5px solid rgba(245,196,81,.32);border-radius:22px;padding:22px}
+  .bonus-wrap.tools-highlight{border-color:rgba(16,217,138,.55);box-shadow:0 0 40px rgba(16,217,138,.15)}
+  .bonus-wrap.tools-highlight .bonus-top b{color:var(--emerald)}
   .bonus-top{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
   .bonus-top b{font-family:var(--disp);font-size:18px}
   .bonus-top .val{margin-left:auto;font-family:var(--disp);color:var(--gold);font-weight:800;font-size:22px;text-shadow:0 0 20px rgba(245,196,81,.4)}
@@ -265,8 +267,8 @@
   <div class="section-h reveal"><span class="bar"></span><h2>Форматы старта</h2></div>
   <div id="tariffs"></div>
 
-  <div class="section-h reveal"><span class="bar"></span><h2>Бонусы-инструменты</h2></div>
-  <div class="bonus-wrap reveal">
+  <div class="section-h reveal" id="toolsSection"><span class="bar"></span><h2>🧰 Инструменты в пакетах</h2></div>
+  <div class="bonus-wrap reveal tools-highlight">
     <div class="bonus-top"><b>Входят бесплатно в любой пакет</b><span class="val">~$2000</span></div>
     <div class="bonus-sub">Готовые помощники для старта — простыми словами:</div>
     <div id="bonuses"></div>
@@ -453,6 +455,14 @@ const TARIFFS = [
 ];
 
 var $=function(id){return document.getElementById(id);};
+
+// IntersectionObserver — объявляем ДО renderTariffs (иначе скрипт падает и экран чёрный)
+var io=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+},{threshold:.1});
+
 $('inside').innerHTML = INSIDE.map(function(x,i){var w=(i===INSIDE.length-1&&INSIDE.length%2===1)?' wide':'';return '<div class="in-card glass reveal'+w+'"><div class="e">'+x.e+'</div><b>'+x.n+'</b><span>'+x.d+'</span></div>';}).join('');
 $('why').innerHTML = WHY.map(function(w){return '<div class="why-item glass reveal"><div class="n">'+w.e+'</div><div><b>'+w.n+'</b><span>'+w.d+'</span></div></div>';}).join('');
 $('vsRows').innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
@@ -473,7 +483,6 @@ function renderTariffs(flash){
     var flashCls=(flash&&on)?' price-flash':'';
     return '<div class="tariff glass reveal '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
   }).join('');
-  document.querySelectorAll('#tariffs .reveal').forEach(function(el){io.observe(el);});
 }
 renderTariffs(false);
 
@@ -504,6 +513,9 @@ function activatePromoPreview(){
   DEADLINE = nowSec() + 24 * 3600;
   DISCOUNT = '';
   renderTariffs(true);
+  document.querySelectorAll('#tariffs .reveal:not(.in)').forEach(function(el){
+    io.observe(el);
+  });
   initPromoBar();
   updateCta();
   showToast('Готово: ниже цены «было → стало». Листайте к форматам ↓');
@@ -558,9 +570,7 @@ function updateCta(){
 }
 updateCta();
 
-// reveal-on-scroll
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
-document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
 var promoTickTimer=null;
 function initPromoBar(){
@@ -594,6 +604,13 @@ function initPromoBar(){
 }
 initPromoBar();
 if(isDiscountVisible()) renderTariffs(false);
+
+if(params.get('section')==='tools'){
+  setTimeout(function(){
+    var el=$('toolsSection')||document.getElementById('toolsSection');
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 500);
+}
 </script>
 </body>
 </html>
