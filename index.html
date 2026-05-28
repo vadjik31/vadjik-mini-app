@@ -207,6 +207,9 @@
   .cta-main::before{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 3.4s infinite}
   .cta-main .cta-sub{display:block;font-family:var(--body);font-size:12.5px;font-weight:700;opacity:.82;margin-top:2px}
   @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 8px 30px rgba(16,217,138,.35)}50%{transform:scale(1.018);box-shadow:0 10px 38px rgba(16,217,138,.5)}}
+  .cta-ask{width:100%;margin-top:8px;background:rgba(255,255,255,.04);color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:11px;font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer}
+  .cta-ask:active{background:rgba(255,255,255,.08)}
+  .t-save{display:inline-block;margin-left:6px;font-size:13px;font-weight:800;color:#86efac;background:rgba(16,217,138,.16);padding:3px 9px;border-radius:7px;vertical-align:middle}
 
   @media(max-width:380px){.hero h1{font-size:28px}.section-h h2{font-size:21px}.promo-bar .timer{font-size:38px}}
 </style>
@@ -274,7 +277,10 @@
 <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
-<div class="cta-bar"><div class="inner"><button class="cta-main" id="ctaMain" onclick="book()">🎁 Скидка −20% + личный созвон<span class="cta-sub">на 24 часа · нажми — цены обновятся</span></button></div></div>
+<div class="cta-bar"><div class="inner">
+  <button class="cta-main" id="ctaMain" onclick="book()">🎁 Скидка −20% + личный созвон<span class="cta-sub">на 24 часа · нажми — цены обновятся</span></button>
+  <button class="cta-ask" onclick="openContact()">💬 Есть вопросы — написать Вадиму</button>
+</div></div>
 
 <script>
 const TG = window.Telegram ? window.Telegram.WebApp : null;
@@ -282,11 +288,33 @@ if (TG) { TG.ready(); TG.expand(); }
 const params = new URLSearchParams(location.search);
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
-const DEADLINE = parseInt(params.get('deadline')||'0',10);
-const DISCOUNT = params.get('discount') || '';
-const DISC = parseInt(params.get('disc')||'0',10);
-const PROMO_ON = DEADLINE > Math.floor(Date.now()/1000) && DISC > 0;
+
+// Промо: сначала смотрим параметры в URL, потом — что сохранили локально.
+// Так скидка и таймер остаются у человека, даже если он закрыл аппку
+// и зашёл снова без параметров.
+let DEADLINE = parseInt(params.get('deadline')||'0',10);
+let DISC = parseInt(params.get('disc')||'0',10);
+let DISCOUNT = params.get('discount') || '';
+let SIG = params.get('sig') || '';
+let UID = params.get('uid') || '';
+const NOW_S = Math.floor(Date.now()/1000);
+try {
+  if (DEADLINE > NOW_S && DISC > 0) {
+    // только что пришли с активной скидкой — сохраним для будущих заходов
+    localStorage.setItem('promo_v1', JSON.stringify({deadline:DEADLINE,disc:DISC,discount:DISCOUNT,sig:SIG,uid:UID}));
+  } else {
+    // зашли без параметров — попробуем восстановить
+    const saved = JSON.parse(localStorage.getItem('promo_v1')||'null');
+    if (saved && saved.deadline > NOW_S && saved.disc > 0) {
+      DEADLINE = saved.deadline; DISC = saved.disc;
+      DISCOUNT = saved.discount; SIG = saved.sig; UID = saved.uid;
+    }
+  }
+} catch(e) { /* приватный режим — просто без сохранения */ }
+
+const PROMO_ON = DEADLINE > NOW_S && DISC > 0;
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
+function savings(p){ return p - discPrice(p); }
 
 document.getElementById('siteLink').href = SITE;
 document.getElementById('siteLink').onclick = function(e){e.preventDefault();if(TG&&TG.openLink){TG.openLink(SITE);}else{window.open(SITE,'_blank');}};
@@ -386,7 +414,7 @@ $('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';
 $('tariffs').innerHTML = TARIFFS.map(function(t,i){
   var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
   var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
-  var priceHtml=PROMO_ON?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div>':'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
+  var priceHtml=PROMO_ON?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Ваша экономия: $'+savings(t.price).toLocaleString()+'</div>':'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
   var btnLabel=PROMO_ON?'Забрать со скидкой':'Выбрать этот формат';
   return '<div class="tariff glass reveal '+t.cls+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
 }).join('');
@@ -401,19 +429,37 @@ function openSheet(i){
 }
 function closeSheet(){$('sheet').classList.remove('on');$('sheetBg').classList.remove('on');}
 function viewImg(src){$('viewerImg').src=src;$('viewer').classList.add('on');}
+function tgLink(url){
+  // надёжное открытие чата с Вадимом — не уходит в Saved Messages
+  if(!url) return;
+  var clean = url.replace(/^https?:\/\//,'');  // t.me/vadjik
+  var full = 'https://' + clean;
+  if(TG && TG.openTelegramLink){ TG.openTelegramLink(full); }
+  else { window.open(full, '_blank'); }
+}
+function openContact(){ tgLink(CONTACT); }
+
 function book(){
   if(PROMO_ON && DISCOUNT){
-    // промо активно — ведём на сайт со скидкой
-    if(TG&&TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');}
-  } else {
-    // промо ещё не запущено — закрываем аппку, человек вернётся в чат
-    // и нажмёт кнопку запуска промо в боте (там запустится таймер)
-    if(TG && TG.close){
-      try { TG.HapticFeedback && TG.HapticFeedback.impactOccurred('medium'); } catch(e){}
-      if(TG.showAlert){TG.showAlert('Сейчас вернётесь в чат — нажмите кнопку запуска бонуса там, и таймер пойдёт.', function(){TG.close();});}
-      else {TG.close();}
+    // промо активно — явное подтверждение, потом сайт со скидкой
+    var msg = 'Сейчас откроется сайт vadjik.com — цены там уже со скидкой −' + DISC + '%. Открыть?';
+    if(TG && TG.showConfirm){
+      TG.showConfirm(msg, function(ok){
+        if(ok){ if(TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');} }
+      });
     } else {
-      if(TG&&TG.openTelegramLink){TG.openTelegramLink(CONTACT);}else{window.open(CONTACT,'_blank');}
+      if(TG&&TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');}
+    }
+  } else {
+    // промо ещё не запущено — закрываем аппку, чтобы человек вернулся
+    // в чат с ботом и там нажал кнопку запуска бонуса (таймер пойдёт)
+    var msg2 = 'Чтобы получить скидку и созвон, нажмите кнопку «🎁 Скидка −20% + личный созвон» прямо в чате с ботом. Закрыть аппку?';
+    if(TG && TG.showConfirm){
+      TG.showConfirm(msg2, function(ok){ if(ok && TG.close) TG.close(); });
+    } else if(TG && TG.close){
+      TG.close();
+    } else {
+      tgLink(CONTACT);
     }
   }
 }
