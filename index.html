@@ -55,6 +55,9 @@
   .t-sub{color:var(--mut);font-size:13px;margin-bottom:12px}
   .t-price{font-size:30px;font-weight:800;letter-spacing:-1px}
   .t-price small{font-size:14px;color:var(--mut);font-weight:600}
+  .t-old{font-size:18px;color:var(--mut);text-decoration:line-through;font-weight:600;letter-spacing:0}
+  .t-new{color:var(--emerald)}
+  .t-disc{font-size:13px;font-weight:700;color:#6ee7b7;background:rgba(16,185,129,.18);padding:3px 8px;border-radius:6px;vertical-align:middle;letter-spacing:0}
   .t-result{font-size:13px;color:var(--mut);margin:6px 0 14px;padding:8px 12px;background:var(--card2);border-radius:10px}
   .t-feats{list-style:none;margin-bottom:14px}
   .t-feats li{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:4px 0;color:var(--txt)}
@@ -149,6 +152,9 @@ const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const DEADLINE = parseInt(params.get('deadline')||'0',10);
 const DISCOUNT = params.get('discount') || '';
+const DISC = parseInt(params.get('disc')||'0',10);  // процент скидки
+const PROMO_ON = DEADLINE > Math.floor(Date.now()/1000) && DISC > 0;
+function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 const FLAGS = {"Германия":"\uD83C\uDDE9\uD83C\uDDEA","США":"\uD83C\uDDFA\uD83C\uDDF8","Польша":"\uD83C\uDDF5\uD83C\uDDF1","Италия":"\uD83C\uDDEE\uD83C\uDDF9","Испания":"\uD83C\uDDEA\uD83C\uDDF8","Чехия":"\uD83C\uDDE8\uD83C\uDDFF","Европа":"\uD83C\uDDEA\uD83C\uDDFA","Австрия":"\uD83C\uDDE6\uD83C\uDDF9","Нидерланды":"\uD83C\uDDF3\uD83C\uDDF1","Франция":"\uD83C\uDDEB\uD83C\uDDF7","Ирландия":"\uD83C\uDDEE\uD83C\uDDEA","Португалия":"\uD83C\uDF0D","Канада":"\uD83C\uDF0D"};
 const COLORS = {emerald:"#10b981",violet:"#8b5cf6",amber:"#f59e0b",blue:"#3b82f6",rose:"#f43f5e",cyan:"#06b6d4",orange:"#f97316",teal:"#14b8a6",indigo:"#6366f1",pink:"#ec4899"};
 const STUDENTS = [
@@ -248,9 +254,18 @@ document.getElementById('resScroll').innerHTML = STUDENTS.map(function(s){
 document.getElementById('tariffs').innerHTML = TARIFFS.map(function(t,i){
   var badge = t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
   var feats = t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
+  var priceHtml;
+  if(PROMO_ON){
+    priceHtml = '<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> '+
+      '<span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> '+
+      '<span class="t-disc">−'+DISC+'%</span></div>';
+  } else {
+    priceHtml = '<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
+  }
+  var btnLabel = PROMO_ON ? 'Оформить со скидкой' : t.cta;
   return '<div class="tariff '+t.cls+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+
-    '<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div><div class="t-result">'+t.result+'</div>'+
-    '<ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+t.cta+'</button>'+
+    priceHtml+'<div class="t-result">'+t.result+'</div>'+
+    '<ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button>'+
     '<button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
 }).join('');
 document.getElementById('bonuses').innerHTML = BONUSES.map(function(b){
@@ -261,8 +276,11 @@ document.getElementById('gloss').innerHTML = GLOSSARY.map(function(g){
 }).join('');
 function openSheet(i){
   var t = TARIFFS[i], d = t.detail;
+  var priceStr = PROMO_ON
+    ? '$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')'
+    : '$'+t.price.toLocaleString();
   var html = '<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3>'+
-    '<div class="ssub">'+t.sub+' · $'+t.price.toLocaleString()+'</div><div class="intro">'+d.intro+'</div>';
+    '<div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
   d.blocks.forEach(function(b){
     html += '<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';
     if(b.img) html += '<img class="shot" src="'+b.img+'" onerror="this.remove()" onclick="viewImg(\''+b.img+'\')">';
