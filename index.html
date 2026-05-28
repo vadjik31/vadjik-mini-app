@@ -34,6 +34,21 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
   .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  .app-nav{position:sticky;top:0;z-index:35;margin:0 -18px 12px;padding:10px 0 12px;
+    background:rgba(7,8,9,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line)}
+  .app-nav .nav-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 18px 2px;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .app-nav .nav-scroll::-webkit-scrollbar{display:none}
+  .app-nav a{flex:0 0 auto;scroll-snap-align:start;padding:9px 14px;border-radius:999px;font-size:13px;font-weight:700;
+    color:var(--mut);border:1px solid var(--line);text-decoration:none;white-space:nowrap;transition:color .2s,border-color .2s,background .2s}
+  .app-nav a.active{color:#06281c;background:linear-gradient(95deg,var(--accent),var(--accent2));border-color:transparent}
+  .checks-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .check-card{padding:16px}
+  .check-card .e{font-size:24px;margin-bottom:8px}
+  .check-card b{display:block;font-family:var(--disp);font-size:15px;margin-bottom:4px}
+  .check-card span{color:var(--mut);font-size:13.5px;line-height:1.45}
+  .check-card.wide{grid-column:1 / -1}
   .hero{position:relative;padding:40px 18px 8px;text-align:center}
   .hero .kicker{font-family:var(--disp);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
     color:var(--accent);margin-bottom:12px;opacity:.9}
@@ -219,7 +234,19 @@
     box-shadow:0 8px 32px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;pointer-events:none}
   .app-toast.show{opacity:1;transform:translateY(0)}
 
+  @media(min-width:768px){
+    .wrap,.cta-bar .inner{max-width:920px}
+    .hero h1{font-size:38px}
+    .inside{grid-template-columns:repeat(4,1fr)}
+    .checks-grid{grid-template-columns:repeat(2,1fr)}
+    .res-card{flex:0 0 32%;max-width:300px}
+    .sheet{left:50%;right:auto;width:min(640px,92vw);max-height:82vh;border-radius:24px;
+      transform:translate(-50%,110%);bottom:8vh}
+    .sheet.on{transform:translate(-50%,0)}
+    .sheet-grab{display:none}
+  }
   @media(max-width:380px){.hero h1{font-size:28px}.section-h h2{font-size:21px}.promo-bar .timer{font-size:38px}}
+  @media(max-width:520px){.checks-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -231,8 +258,17 @@
 <div id="promoBar" style="display:none"></div>
 <div class="app-toast" id="appToast" aria-live="polite"></div>
 <div class="wrap">
+  <nav class="app-nav reveal" id="appNav" aria-label="Разделы">
+    <div class="nav-scroll">
+      <a href="#sec-how">Как идём</a>
+      <a href="#sec-formats">Форматы</a>
+      <a href="#sec-checks">Проверки</a>
+      <a href="#toolsSection">Инструменты</a>
+      <a href="#sec-results">Результаты</a>
+    </div>
+  </nav>
 
-  <div class="section-h reveal"><span class="bar"></span><h2>Как проходит работа</h2></div>
+  <div class="section-h reveal" id="sec-how"><span class="bar"></span><h2>Как проходит работа</h2></div>
   <div class="inside" id="inside"></div>
 
   <div class="promise reveal">
@@ -264,8 +300,12 @@
   <div class="section-h reveal"><span class="bar"></span><h2>Путь до первых продаж</h2></div>
   <div class="road" id="road"></div>
 
-  <div class="section-h reveal"><span class="bar"></span><h2>Форматы старта</h2></div>
+  <div class="section-h reveal" id="sec-formats"><span class="bar"></span><h2>Форматы старта</h2></div>
   <div id="tariffs"></div>
+
+  <div class="section-h reveal" id="sec-checks"><span class="bar"></span><h2>Что проверяем до закупки</h2></div>
+  <p class="hint reveal" style="margin-top:-8px">Ловим ошибку до того, как она стоит денег</p>
+  <div class="checks-grid" id="checksGrid"></div>
 
   <div class="section-h reveal" id="toolsSection"><span class="bar"></span><h2>🧰 Инструменты в пакетах</h2></div>
   <div class="bonus-wrap reveal tools-highlight">
@@ -274,7 +314,7 @@
     <div id="bonuses"></div>
   </div>
 
-  <div class="section-h reveal"><span class="bar"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
+  <div class="section-h reveal" id="sec-results"><span class="bar"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
   <div class="disclaimer glass reveal">Это не обещание результата. Цифры зависят от бюджета, времени, выбранных товаров и того, насколько человек выполняет шаги.</div>
   <p class="hint">← листайте карточки →</p>
   <div class="res-scroll" id="resScroll"></div>
@@ -293,7 +333,15 @@
 
 <script>
 const TG = window.Telegram ? window.Telegram.WebApp : null;
-if (TG) { TG.ready(); TG.expand(); }
+if (TG) {
+  TG.ready();
+  TG.expand();
+  if (TG.requestFullscreen && window.innerWidth >= 768) {
+    try { TG.requestFullscreen(); } catch(e) {}
+  }
+  if (TG.setHeaderColor) TG.setHeaderColor('#070809');
+  if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
+}
 const params = new URLSearchParams(location.search);
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
@@ -403,6 +451,12 @@ const ROAD = [
   {n:"5",t:"Отправка на Amazon",d:"Делаем первую поставку правильно — товар попадает на склады Amazon."},
   {n:"6",t:"Первые продажи",d:"Доводим до первых реальных продаж. Здесь мы особенно плотно на связи."}
 ];
+const CHECKS = [
+{e:"🤝",n:"Поставщик",d:"Можно ли доверять, нет ли подвоха в условиях и документах."},
+{e:"📦",n:"Спрос на Amazon",d:"Покупают ли товар сейчас — не «кажется», а по цифрам."},
+{e:"💰",n:"Прибыль",d:"Сходятся ли расходы, комиссии и маржа после всех затрат."},
+{e:"📋",n:"Документы и правила",d:"Нет ли риска блокировки или отказа из‑за категории и требований."}
+];
 const BONUSES = [
   {e:"🔓",n:"Разрешение продавать больше товаров",d:"Помогаем открыть доступ к брендам, что закрыты для новичков"},
   {e:"📄",n:"Поставщики и документы",d:"Как выбрать поставщика, какие нужны бумаги и как не попасть на мусор"},
@@ -467,6 +521,10 @@ $('inside').innerHTML = INSIDE.map(function(x,i){var w=(i===INSIDE.length-1&&INS
 $('why').innerHTML = WHY.map(function(w){return '<div class="why-item glass reveal"><div class="n">'+w.e+'</div><div><b>'+w.n+'</b><span>'+w.d+'</span></div></div>';}).join('');
 $('vsRows').innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
 $('road').innerHTML = ROAD.map(function(s){return '<div class="step-r reveal"><div class="num">'+s.n+'</div><div class="body"><b>'+s.t+'</b><p>'+s.d+'</p></div></div>';}).join('');
+$('checksGrid').innerHTML = CHECKS.map(function(c,i){
+  var w=(i===CHECKS.length-1&&CHECKS.length%2===1)?' wide':'';
+  return '<div class="check-card glass reveal'+w+'"><div class="e">'+c.e+'</div><b>'+c.n+'</b><span>'+c.d+'</span></div>';
+}).join('');
 $('bonuses').innerHTML = BONUSES.map(function(b){return '<div class="bonus-item"><span class="e">'+b.e+'</span><div><b>'+b.n+'</b><span>'+b.d+'</span></div></div>';}).join('');
 $('resCnt').textContent = STUDENTS.length+" учеников";
 $('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
@@ -572,6 +630,39 @@ updateCta();
 
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
+(function initSectionNav(){
+  var links = document.querySelectorAll('.app-nav a[href^="#"]');
+  if(!links.length) return;
+  var ids = [];
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    if(id) ids.push(id);
+    a.addEventListener('click', function(ev){
+      var el = document.getElementById(id);
+      if(el){
+        ev.preventDefault();
+        el.scrollIntoView({behavior:'smooth',block:'start'});
+        links.forEach(function(x){ x.classList.remove('active'); });
+        a.classList.add('active');
+      }
+    });
+  });
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var id = en.target.id;
+        links.forEach(function(a){
+          a.classList.toggle('active', a.getAttribute('href') === '#'+id);
+        });
+      }
+    });
+  }, {rootMargin:'-20% 0px -55% 0px', threshold:0});
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) obs.observe(el);
+  });
+})();
+
 var promoTickTimer=null;
 function initPromoBar(){
   var bar=$('promoBar');
@@ -605,12 +696,6 @@ function initPromoBar(){
 initPromoBar();
 if(isDiscountVisible()) renderTariffs(false);
 
-if(params.get('section')==='tools'){
-  setTimeout(function(){
-    var el=$('toolsSection')||document.getElementById('toolsSection');
-    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-  }, 500);
-}
 </script>
 </body>
 </html>
