@@ -210,6 +210,12 @@
   .cta-ask{width:100%;margin-top:8px;background:rgba(255,255,255,.04);color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:11px;font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer}
   .cta-ask:active{background:rgba(255,255,255,.08)}
   .t-save{display:inline-block;margin-left:6px;font-size:13px;font-weight:800;color:#86efac;background:rgba(16,217,138,.16);padding:3px 9px;border-radius:7px;vertical-align:middle}
+  .tariff.price-flash .t-price{animation:pricePop .65s ease}
+  @keyframes pricePop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
+  .app-toast{position:fixed;left:16px;right:16px;bottom:118px;z-index:40;padding:14px 16px;border-radius:14px;
+    background:rgba(16,217,138,.95);color:#06281c;font-weight:700;font-size:14px;text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;pointer-events:none}
+  .app-toast.show{opacity:1;transform:translateY(0)}
 
   @media(max-width:380px){.hero h1{font-size:28px}.section-h h2{font-size:21px}.promo-bar .timer{font-size:38px}}
 </style>
@@ -221,6 +227,7 @@
   <p>Форматы старта, поддержка и реальные результаты</p>
 </div>
 <div id="promoBar" style="display:none"></div>
+<div class="app-toast" id="appToast" aria-live="polite"></div>
 <div class="wrap">
 
   <div class="section-h reveal"><span class="bar"></span><h2>Как проходит работа</h2></div>
@@ -237,12 +244,12 @@
       <div class="bb-icon">🎁</div>
       <div>
         <div class="bb-title">Что входит в спец-цену</div>
-        <div class="bb-sub">Бонус на 24 часа — два конкретных пункта:</div>
+        <div class="bb-sub">Бонус на 24 часа:</div>
       </div>
     </div>
     <div class="bb-items">
-      <div class="bb-item"><span class="bb-num">−20%</span><div><b>Скидка на любой формат</b><span>Цены ниже уже пересчитаны</span></div></div>
-      <div class="bb-item"><span class="bb-num bb-call">📞</span><div><b>Личный созвон со мной</b><span>30 минут по видео — посмотрим вашу ситуацию вживую</span></div></div>
+      <div class="bb-item"><span class="bb-num">−20%</span><div><b>Скидка на любой пакет обучения</b><span>Цены ниже уже пересчитаны</span></div></div>
+      <div class="bb-item"><span class="bb-num">🛠</span><div><b>Инструменты в пакете</b><span>~$2 000 по отдельности — в обучение входят бесплатно</span></div></div>
     </div>
   </div>
 
@@ -260,7 +267,7 @@
 
   <div class="section-h reveal"><span class="bar"></span><h2>Бонусы-инструменты</h2></div>
   <div class="bonus-wrap reveal">
-    <div class="bonus-top"><b>Входят бесплатно в любой формат</b><span class="val">~$1839</span></div>
+    <div class="bonus-top"><b>Входят бесплатно в любой пакет</b><span class="val">~$2000</span></div>
     <div class="bonus-sub">Готовые помощники для старта — простыми словами:</div>
     <div id="bonuses"></div>
   </div>
@@ -278,7 +285,7 @@
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
 <div class="cta-bar"><div class="inner">
-  <button class="cta-main" id="ctaMain" onclick="book()">🎁 Скидка −20% + личный созвон<span class="cta-sub">на 24 часа · нажми — цены обновятся</span></button>
+  <button class="cta-main" id="ctaMain" onclick="book()">👀 Показать цены со скидкой −20%<span class="cta-sub">остаётесь в приложении · было → стало</span></button>
   <button class="cta-ask" onclick="openContact()">💬 Есть вопросы — написать Вадиму</button>
 </div></div>
 
@@ -289,32 +296,75 @@ const params = new URLSearchParams(location.search);
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 
-// Промо: сначала смотрим параметры в URL, потом — что сохранили локально.
-// Так скидка и таймер остаются у человека, даже если он закрыл аппку
-// и зашёл снова без параметров.
+// Скидка на экране — ТОЛЬКО после нажатия кнопки (превью) или после закрепления в боте (URL).
+const DEFAULT_DISC = 20;
 let DEADLINE = parseInt(params.get('deadline')||'0',10);
-let DISC = parseInt(params.get('disc')||'0',10);
+let DISC = 0;
 let DISCOUNT = params.get('discount') || '';
 let SIG = params.get('sig') || '';
 let UID = params.get('uid') || '';
+let PREVIEW_MODE = false;
+let PROMO_REAL = false;
 const NOW_S = Math.floor(Date.now()/1000);
+
+function nowSec(){ return Math.floor(Date.now()/1000); }
+function isDiscountVisible(){
+  return DEADLINE > nowSec() && DISC > 0 && (PROMO_REAL || PREVIEW_MODE);
+}
+
+function persistPromoState(){
+  if (!PROMO_REAL) return;
+  try {
+    localStorage.setItem('promo_v1', JSON.stringify({
+      deadline:DEADLINE, disc:DISC, discount:DISCOUNT, sig:SIG, uid:UID,
+      preview: false
+    }));
+  } catch(e) {}
+}
+
+function resetDiscountDisplay(){
+  if (PROMO_REAL) return;
+  PREVIEW_MODE = false;
+  DISC = 0;
+  DEADLINE = 0;
+}
+
 try {
-  if (DEADLINE > NOW_S && DISC > 0) {
-    // только что пришли с активной скидкой — сохраним для будущих заходов
-    localStorage.setItem('promo_v1', JSON.stringify({deadline:DEADLINE,disc:DISC,discount:DISCOUNT,sig:SIG,uid:UID}));
+  var discUrl = parseInt(params.get('disc')||'0',10);
+  if (DEADLINE > NOW_S && discUrl > 0 && SIG && UID && DISCOUNT) {
+    DISC = discUrl;
+    PROMO_REAL = true;
+    PREVIEW_MODE = false;
+    persistPromoState();
   } else {
-    // зашли без параметров — попробуем восстановить
     const saved = JSON.parse(localStorage.getItem('promo_v1')||'null');
-    if (saved && saved.deadline > NOW_S && saved.disc > 0) {
-      DEADLINE = saved.deadline; DISC = saved.disc;
-      DISCOUNT = saved.discount; SIG = saved.sig; UID = saved.uid;
+    if (saved && !saved.preview && saved.deadline > NOW_S && saved.disc > 0
+        && saved.sig && saved.uid && saved.discount) {
+      DEADLINE = saved.deadline;
+      DISC = saved.disc;
+      DISCOUNT = saved.discount;
+      SIG = saved.sig;
+      UID = saved.uid;
+      PROMO_REAL = true;
+      PREVIEW_MODE = false;
+    } else {
+      resetDiscountDisplay();
+      try { localStorage.removeItem('promo_v1'); } catch(e) {}
     }
   }
-} catch(e) { /* приватный режим — просто без сохранения */ }
+} catch(e) {
+  resetDiscountDisplay();
+}
 
-const PROMO_ON = DEADLINE > NOW_S && DISC > 0;
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 function savings(p){ return p - discPrice(p); }
+
+function showToast(msg){
+  var t=$('appToast'); if(!t)return;
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(function(){t.classList.remove('show');},4200);
+}
 
 document.getElementById('siteLink').href = SITE;
 document.getElementById('siteLink').onclick = function(e){e.preventDefault();if(TG&&TG.openLink){TG.openLink(SITE);}else{window.open(SITE,'_blank');}};
@@ -389,12 +439,12 @@ const TARIFFS = [
  feats:[["Все 75 видео-уроков",1],["9 онлайн-встреч в группе",1],["2 личных созвона",1],["1 проверенный поставщик",1],["Поддержка в чате",1]],
  detail:{intro:"За месяц проходите систему вместе с группой и с нами — вместо месяцев проб в одиночку.",
   blocks:[{h:"Видео-курс",p:"75 уроков + задания, доступ сразу."},{h:"9 онлайн-встреч в группе",ul:["Раз в неделю по расписанию","Можно задавать любые вопросы вживую","Все встречи записываются","Время подбирается под группу"]},{h:"Что разбираем",ul:["Регистрация компании и аккаунта","Где искать поставщиков","Как выбирать товары и считать прибыль","Отправка товара на склад Amazon","Как наращивать обороты"]},{h:"1 проверенный поставщик",p:"Поставщик, у которого можно сразу закупиться — не вслепую."}],
-  summary:["Видео-курс (75 уроков)","Все бонусы ($1839)","9 онлайн-встреч","2 личных созвона","Поддержка после","Ведём до первых продаж"]}},
+  summary:["Видео-курс (75 уроков)","Инструменты (~$2000)","9 онлайн-встреч","2 личных разбора","Поддержка после","Ведём до первых продаж"]}},
 {id:"advanced",cls:"popular",name:"Продвинутый",sub:"С личным наставничеством",price:1700,result:"Стабильные продажи и выстроенная система",badge:"ПОПУЛЯРНЫЙ",badgeCls:"pop",
  feats:[["Всё из «Обучаюсь сам»",1],["4 личных созвона по 1.5ч",1],["3 поставщика для старта",1],["Выбор рынка: США или Европа",1],["4 месяца поддержки",1]],
  detail:{intro:"Всё из самостоятельного формата + личная работа с нами и готовые поставщики.",
   blocks:[{h:"3 поставщика для старта",p:"3 оптовика, которые одобрят ваш аккаунт. Можно закупиться от $4,000 и заработать сверху около 20%."},{h:"4 личных созвона по 1.5 часа",p:"Разбираем лично ваш кабинет и вашу ситуацию — отвечаем на всё здесь и сейчас."},{h:"4 месяца поддержки",p:"Любой вопрос по Amazon — пишете нам, отвечаем."},{h:"Также входит",ul:["9 записей групповых встреч","Старт сразу, без ожидания группы","Все 75 видео-уроков","Выбор рынка: США или Европа"]}],
-  summary:["Всё из базового формата","4 личных созвона","3 поставщика","Выбор рынка США/ЕС","4 месяца поддержки","Все бонусы ($1839)"]}},
+  summary:["Всё из базового формата","4 личных разбора","3 поставщика","Выбор рынка США/ЕС","4 месяца поддержки","Инструменты (~$2000)"]}},
 {id:"pro",cls:"vip",name:"Под ключ",sub:"Максимальный формат",price:4200,result:"Бизнес под ключ, цель — $15 000+ продаж в месяц",badge:"ПОД КЛЮЧ",badgeCls:"vip",
  feats:[["Всё из «Продвинутого»",1],["12 личных созвонов",1],["10 поставщиков + 50 товаров",1],["Сайт + система учёта",1],["6 месяцев поддержки",1]],
  detail:{intro:"Максимальное сопровождение. Большую часть делаем вместе с вами, цель — выйти на $15 000+ продаж в месяц.",
@@ -411,17 +461,25 @@ $('bonuses').innerHTML = BONUSES.map(function(b){return '<div class="bonus-item"
 $('resCnt').textContent = STUDENTS.length+" учеников";
 $('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
 
-$('tariffs').innerHTML = TARIFFS.map(function(t,i){
-  var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
-  var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
-  var priceHtml=PROMO_ON?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Ваша экономия: $'+savings(t.price).toLocaleString()+'</div>':'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
-  var btnLabel=PROMO_ON?'Забрать со скидкой':'Выбрать этот формат';
-  return '<div class="tariff glass reveal '+t.cls+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
-}).join('');
+function renderTariffs(flash){
+  var on=isDiscountVisible();
+  $('tariffs').innerHTML = TARIFFS.map(function(t,i){
+    var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
+    var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
+    var priceHtml=on
+      ?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Экономия: $'+savings(t.price).toLocaleString()+'</div>'
+      :'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
+    var btnLabel=!on?'Смотреть со скидкой':(PROMO_REAL&&DISCOUNT?'На сайт со скидкой':'Закрепить скидку');
+    var flashCls=(flash&&on)?' price-flash':'';
+    return '<div class="tariff glass reveal '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button></div>';
+  }).join('');
+  document.querySelectorAll('#tariffs .reveal').forEach(function(el){io.observe(el);});
+}
+renderTariffs(false);
 
 function openSheet(i){
   var t=TARIFFS[i],d=t.detail;
-  var priceStr=PROMO_ON?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
+  var priceStr=isDiscountVisible()?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
   var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
   d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
   html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
@@ -439,48 +497,103 @@ function tgLink(url){
 }
 function openContact(){ tgLink(CONTACT); }
 
-function book(){
-  if(PROMO_ON && DISCOUNT){
-    // промо активно — явное подтверждение, потом сайт со скидкой
-    var msg = 'Сейчас откроется сайт vadjik.com — цены там уже со скидкой −' + DISC + '%. Открыть?';
-    if(TG && TG.showConfirm){
-      TG.showConfirm(msg, function(ok){
-        if(ok){ if(TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');} }
-      });
-    } else {
-      if(TG&&TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');}
-    }
+function activatePromoPreview(){
+  PREVIEW_MODE = true;
+  PROMO_REAL = false;
+  DISC = DEFAULT_DISC;
+  DEADLINE = nowSec() + 24 * 3600;
+  DISCOUNT = '';
+  renderTariffs(true);
+  initPromoBar();
+  updateCta();
+  showToast('Готово: ниже цены «было → стало». Листайте к форматам ↓');
+  var el=$('tariffs');
+  if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); }, 350);
+}
+
+function claimPromoInBot(){
+  if(TG && TG.sendData){
+    TG.sendData('claim_promo');
+    showToast('Запрос ушёл в бот — проверьте чат: закрепим скидку на 24 ч');
+    if(TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
   } else {
-    // промо ещё не запущено — закрываем аппку, чтобы человек вернулся
-    // в чат с ботом и там нажал кнопку запуска бонуса (таймер пойдёт)
-    var msg2 = 'Чтобы получить скидку и созвон, нажмите кнопку «🎁 Скидка −20% + личный созвон» прямо в чате с ботом. Закрыть аппку?';
-    if(TG && TG.showConfirm){
-      TG.showConfirm(msg2, function(ok){ if(ok && TG.close) TG.close(); });
-    } else if(TG && TG.close){
-      TG.close();
-    } else {
-      tgLink(CONTACT);
-    }
+    tgLink(CONTACT);
   }
 }
+
+function openDiscountSite(){
+  var msg = 'Открыть сайт со скидкой −' + DISC + '%?';
+  if(TG && TG.showConfirm){
+    TG.showConfirm(msg, function(ok){
+      if(ok){ if(TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');} }
+    });
+  } else if(TG&&TG.openLink){ TG.openLink(DISCOUNT); }
+  else { window.open(DISCOUNT,'_blank'); }
+}
+
+function book(){
+  if(isDiscountVisible() && PROMO_REAL && DISCOUNT){
+    openDiscountSite();
+    return;
+  }
+  if(isDiscountVisible() && PREVIEW_MODE){
+    claimPromoInBot();
+    return;
+  }
+  if(!isDiscountVisible()){
+    activatePromoPreview();
+  }
+}
+
+function updateCta(){
+  var main=$('ctaMain');
+  if(!main) return;
+  if(isDiscountVisible() && PROMO_REAL && DISCOUNT){
+    main.innerHTML='🛒 Перейти на сайт со скидкой<span class="cta-sub">−'+DISC+'% · цены уже пересчитаны</span>';
+  } else if(isDiscountVisible()){
+    main.innerHTML='🔥 Закрепить скидку на 24 ч<span class="cta-sub">бот пришлёт таймер · аппка не закроется</span>';
+  } else {
+    main.innerHTML='👀 Показать цены со скидкой −'+DEFAULT_DISC+'%<span class="cta-sub">остаётесь здесь · было → стало</span>';
+  }
+}
+updateCta();
 
 // reveal-on-scroll
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
 document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
 
-(function initPromo(){
-  if(!DEADLINE)return;
-  var bar=$('promoBar'),main=$('ctaMain');
-  bar.className='promo-bar';bar.style.display='block';
-  function render(){
-    var left=DEADLINE-Math.floor(Date.now()/1000);
-    if(left<=0){bar.className='promo-bar ended';bar.innerHTML='<div class="pt">Спец-цена завершена</div><div class="timer">Время вышло</div><div class="ps">Можно написать и обсудить варианты</div>';if(main)main.innerHTML='Написать Вадиму';clearInterval(t);return;}
+var promoTickTimer=null;
+function initPromoBar(){
+  var bar=$('promoBar');
+  if(!bar) return;
+  if(!isDiscountVisible()){ bar.style.display='none'; updateCta(); return; }
+  bar.className='promo-bar'; bar.style.display='block';
+  function renderBar(){
+    var left=DEADLINE-nowSec();
+    if(left<=0){
+      bar.className='promo-bar ended';
+      bar.innerHTML='<div class="pt">Спец-цена завершена</div><div class="timer">Время вышло</div><div class="ps">Напишите — подскажем по форматам</div>';
+      clearInterval(promoTickTimer);
+      updateCta();
+      renderTariffs(false);
+      return;
+    }
     var h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60,pad=function(n){return(n<10?'0':'')+n;};
-    bar.innerHTML='<div class="pt">🔥 Ваша спец-цена −'+DISC+'% активна</div><div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div><div class="ps">Цены ниже уже со скидкой · бонусом — личный разбор с Вадимом</div>';
-    if(main)main.innerHTML='Забрать спец-цену со скидкой<span class="cta-sub">−'+DISC+'% · осталось '+pad(h)+':'+pad(m)+':'+pad(s)+'</span>';
+    var title=PROMO_REAL
+      ? '🔥 Скидка −'+DISC+'% закреплена'
+      : '👀 Предпросмотр −'+DISC+'%';
+    var sub=PROMO_REAL
+      ? 'Цены ниже «было → стало» · таймер идёт'
+      : 'Так выглядят цены · закрепите кнопкой внизу';
+    bar.innerHTML='<div class="pt">'+title+'</div><div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div><div class="ps">'+sub+'</div>';
+    updateCta();
   }
-  render();var t=setInterval(render,1000);
-})();
+  renderBar();
+  clearInterval(promoTickTimer);
+  promoTickTimer=setInterval(renderBar,1000);
+}
+initPromoBar();
+if(isDiscountVisible()) renderTariffs(false);
 </script>
 </body>
 </html>
