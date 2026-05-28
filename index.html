@@ -112,10 +112,16 @@
   .cta-bar .inner{max-width:680px;margin:0 auto;display:flex;gap:10px}
   .cta-main{flex:1;background:linear-gradient(90deg,#10b981,#14b8a6);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
   .cta-site{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:13px;padding:14px 16px;font-size:14px;cursor:pointer}
+  .promo-bar{margin:12px 16px 0;background:linear-gradient(135deg,rgba(244,63,94,.16),rgba(245,158,11,.12));border:1px solid rgba(244,63,94,.4);border-radius:16px;padding:14px 16px;text-align:center}
+  .promo-bar .pt{font-size:14px;font-weight:700;color:#fda4af}
+  .promo-bar .timer{font-size:30px;font-weight:800;letter-spacing:1px;margin:6px 0;font-variant-numeric:tabular-nums}
+  .promo-bar .ps{font-size:12.5px;color:var(--mut)}
+  .promo-bar.ended .timer{font-size:18px;color:var(--mut)}
 </style>
 </head>
 <body>
 <div class="hero"><h1>Amazon с Вадимом</h1><p>Программы обучения, результаты учеников и бонусы</p></div>
+<div id="promoBar" style="display:none"></div>
 <div class="wrap">
   <div class="section-h"><span class="bar" style="background:var(--emerald)"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
   <p class="hint">← листайте карточки →</p>
@@ -141,6 +147,8 @@ if (TG) { TG.ready(); TG.expand(); }
 const params = new URLSearchParams(location.search);
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
+const DEADLINE = parseInt(params.get('deadline')||'0',10);
+const DISCOUNT = params.get('discount') || '';
 const FLAGS = {"Германия":"\uD83C\uDDE9\uD83C\uDDEA","США":"\uD83C\uDDFA\uD83C\uDDF8","Польша":"\uD83C\uDDF5\uD83C\uDDF1","Италия":"\uD83C\uDDEE\uD83C\uDDF9","Испания":"\uD83C\uDDEA\uD83C\uDDF8","Чехия":"\uD83C\uDDE8\uD83C\uDDFF","Европа":"\uD83C\uDDEA\uD83C\uDDFA","Австрия":"\uD83C\uDDE6\uD83C\uDDF9","Нидерланды":"\uD83C\uDDF3\uD83C\uDDF1","Франция":"\uD83C\uDDEB\uD83C\uDDF7","Ирландия":"\uD83C\uDDEE\uD83C\uDDEA","Португалия":"\uD83C\uDF0D","Канада":"\uD83C\uDF0D"};
 const COLORS = {emerald:"#10b981",violet:"#8b5cf6",amber:"#f59e0b",blue:"#3b82f6",rose:"#f43f5e",cyan:"#06b6d4",orange:"#f97316",teal:"#14b8a6",indigo:"#6366f1",pink:"#ec4899"};
 const STUDENTS = [
@@ -269,8 +277,41 @@ function openSheet(i){
 }
 function closeSheet(){document.getElementById('sheet').classList.remove('on');document.getElementById('sheetBg').classList.remove('on');}
 function viewImg(src){document.getElementById('viewerImg').src = src;document.getElementById('viewer').classList.add('on');}
-function book(){if(TG && TG.openTelegramLink){TG.openTelegramLink(CONTACT);}else{window.open(CONTACT,'_blank');}}
+function book(){
+  // если активно промо — ведём на скидочную страницу, иначе на разбор
+  var target = (DEADLINE > Math.floor(Date.now()/1000) && DISCOUNT) ? DISCOUNT : CONTACT;
+  if(TG && TG.openLink && target===DISCOUNT){ TG.openLink(target); }
+  else if(TG && TG.openTelegramLink && target===CONTACT){ TG.openTelegramLink(CONTACT); }
+  else { window.open(target,'_blank'); }
+}
 function openSite(){if(TG && TG.openLink){TG.openLink(SITE);}else{window.open(SITE,'_blank');}}
+
+// ---- промо-таймер ----
+(function initPromo(){
+  if(!DEADLINE) return;
+  var bar = document.getElementById('promoBar');
+  var main = document.querySelector('.cta-main');
+  bar.className = 'promo-bar';
+  bar.style.display = 'block';
+  function render(){
+    var left = DEADLINE - Math.floor(Date.now()/1000);
+    if(left <= 0){
+      bar.className = 'promo-bar ended';
+      bar.innerHTML = '<div class="pt">Скидка завершена</div><div class="timer">Время вышло</div><div class="ps">Можно записаться на разбор по обычной цене</div>';
+      if(main) main.textContent = 'Записаться на разбор';
+      clearInterval(t);
+      return;
+    }
+    var h=Math.floor(left/3600), m=Math.floor((left%3600)/60), s=left%60;
+    var pad=function(n){return (n<10?'0':'')+n;};
+    bar.innerHTML = '<div class="pt">🔥 Ваша скидка + личный созвон в подарок</div>'+
+      '<div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div>'+
+      '<div class="ps">Успейте оформить — после таймера обычная цена</div>';
+    if(main) main.textContent = 'Оформить со скидкой';
+  }
+  render();
+  var t = setInterval(render, 1000);
+})();
 </script>
 </body>
 </html>
