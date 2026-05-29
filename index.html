@@ -668,13 +668,7 @@ function openHowmany(){
     showToast('Калькулятор — кнопка «Сколько заработать» в меню бота внизу');
     return;
   }
-  if(TG && TG.sendData){
-    try {
-      TG.sendData('open_howmany');
-      return;
-    } catch(e) {}
-  }
-  showToast('Закройте это окно и нажмите «💸 Сколько заработать» в меню внизу');
+  openExternal(HOWMANY);
 }
 function openTariffPage(i){
   var t = TARIFFS[i];
