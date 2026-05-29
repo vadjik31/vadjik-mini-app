@@ -34,6 +34,15 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
   .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  @media (min-width:768px){
+    .wrap{max-width:min(960px,94vw)}
+    body{font-size:17px}
+    .hero h1{font-size:46px}
+  }
+  @media (min-width:1200px){
+    .wrap{max-width:min(1100px,88vw)}
+    .hero h1{font-size:50px}
+  }
   .app-nav{position:sticky;top:0;z-index:35;margin:0 -18px 12px;padding:10px 0 12px;
     background:rgba(7,8,9,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line)}
@@ -281,6 +290,8 @@
 
   .cta-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(7,8,9,.9);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:13px 16px 16px;z-index:30}
   .cta-bar .inner{max-width:680px;margin:0 auto}
+  @media (min-width:768px){ .cta-bar .inner{max-width:min(960px,94vw)} }
+  @media (min-width:1200px){ .cta-bar .inner{max-width:min(1100px,88vw)} }
   .cta-main{width:100%;border-radius:16px;padding:18px 16px;font-size:16px;line-height:1.25}
   .cta-main .cta-sub{display:block;font-family:var(--body);font-size:12.5px;font-weight:800;opacity:.9;margin-top:3px;color:#3d1400}
   .cta-ask{width:100%;margin-top:8px;background:rgba(255,255,255,.04);color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:11px;font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer}
@@ -422,14 +433,21 @@
 <script>
 const params = new URLSearchParams(location.search);
 const TG = window.Telegram ? window.Telegram.WebApp : null;
-if (TG) {
+function initTelegramViewport(){
+  if (!TG) return;
   TG.ready();
   TG.expand();
-  if (TG.requestFullscreen && window.innerWidth >= 768) {
+  var pf = (TG.platform || '').toLowerCase();
+  var wide = window.innerWidth >= 768
+    || pf === 'tdesktop' || pf === 'web' || pf === 'macos' || pf === 'weba';
+  if (TG.requestFullscreen && wide) {
     try { TG.requestFullscreen(); } catch(e) {}
   }
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
+}
+initTelegramViewport();
+if (TG) {
   (function(){
     function pingBot(data){
       if(!TG || !TG.sendData) return;
