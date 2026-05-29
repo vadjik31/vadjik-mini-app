@@ -15,12 +15,12 @@
     --amber:#fbbf24; --blue:#60a5fa; --violet:#a78bfa; --emerald:#10d98a;
     --rose:#fb7185; --cyan:#22d3ee; --teal:#2dd4bf; --orange:#fb923c; --indigo:#818cf8; --pink:#f472b6;
     --disp:'Sora',system-ui,sans-serif; --body:'Manrope',system-ui,sans-serif;
-    --tg-safe-bottom:0px; --tg-viewport-height:100vh;
+    --tg-safe-bottom:0px; --tg-desktop-chrome:0px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:16px;line-height:1.6;
     overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
-  body{padding-bottom:calc(124px + var(--tg-safe-bottom));min-height:var(--tg-viewport-height);position:relative}
+  body{padding-bottom:calc(36px + var(--tg-safe-bottom) + var(--tg-desktop-chrome));position:relative}
   /* живой фон-aurora */
   body::before{content:'';position:fixed;inset:-20%;z-index:-2;pointer-events:none;
     background:
@@ -62,8 +62,7 @@
   .check-card span{color:var(--mut);font-size:13.5px;line-height:1.45}
   .check-card.wide{grid-column:1 / -1}
   #sec-how,#sec-formats,#sec-earn,#sec-checks,#toolsSection,#sec-results{scroll-margin-top:76px}
-  #sec-formats,#tariffs{scroll-margin-bottom:calc(150px + var(--tg-safe-bottom,0px))}
-  #tariffs{padding-bottom:12px}
+  #sec-formats,#tariffs{scroll-margin-bottom:calc(24px + var(--tg-safe-bottom) + var(--tg-desktop-chrome))}
   .earn-card{padding:20px 20px 18px}
   .earn-card .ttl{font-family:var(--disp);font-size:18px;font-weight:800;margin-bottom:8px}
   .earn-card p{color:#dbe0e8;font-size:14.5px;line-height:1.55}
@@ -291,7 +290,7 @@
   .viewer img{max-width:100%;max-height:90vh;border-radius:10px}
   .viewer .x{position:absolute;top:14px;right:18px;color:#fff;font-size:34px;cursor:pointer}
 
-  .cta-bar{position:fixed;left:0;right:0;bottom:var(--tg-safe-bottom);background:rgba(7,8,9,.9);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:13px 16px calc(16px + env(safe-area-inset-bottom,0px));z-index:30}
+  .cta-bar{margin:36px 0 8px;padding-top:20px;border-top:1px solid var(--line)}
   .cta-bar .inner{max-width:680px;margin:0 auto}
   @media (min-width:768px){ .cta-bar .inner{max-width:min(960px,94vw)} }
   @media (min-width:1200px){ .cta-bar .inner{max-width:min(1100px,88vw)} }
@@ -302,9 +301,10 @@
   .t-save{display:inline-block;margin-left:6px;font-size:13px;font-weight:800;color:#86efac;background:rgba(16,217,138,.16);padding:3px 9px;border-radius:7px;vertical-align:middle}
   .tariff.price-flash .t-price{animation:pricePop .65s ease}
   @keyframes pricePop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
-  #tariffs{padding-bottom:12px;margin-bottom:calc(8px + var(--tg-safe-bottom))}
-  #sec-formats{scroll-margin-bottom:calc(150px + var(--tg-safe-bottom))}
-  .app-toast{position:fixed;left:16px;right:16px;bottom:calc(118px + var(--tg-safe-bottom));z-index:40;padding:14px 16px;border-radius:14px;
+  #tariffs{padding-bottom:calc(12px + var(--tg-desktop-chrome))}
+  .tg-desktop-spacer{display:none;height:0}
+  body.is-tg-desktop .tg-desktop-spacer{display:block;height:var(--tg-desktop-chrome)}
+  .app-toast{position:fixed;left:16px;right:16px;bottom:24px;z-index:40;padding:14px 16px;border-radius:14px;
     background:rgba(16,217,138,.95);color:#06281c;font-weight:700;font-size:14px;text-align:center;
     box-shadow:0 8px 32px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;pointer-events:none}
   .app-toast.show{opacity:1;transform:translateY(0)}
@@ -319,6 +319,8 @@
       transform:translate(-50%,110%);bottom:8vh}
     .sheet.on{transform:translate(-50%,0)}
     .sheet-grab{display:none}
+    body.is-tg-desktop #tariffs .tariff:last-child{margin-bottom:calc(16px + var(--tg-desktop-chrome))}
+    body.is-tg-desktop .cta-bar{margin-bottom:calc(8px + var(--tg-desktop-chrome))}
   }
   @media(max-width:380px){.hero h1{font-size:28px}.section-h h2{font-size:21px}.promo-bar .timer{font-size:38px}}
   @media(max-width:520px){.checks-grid{grid-template-columns:1fr}}
@@ -398,6 +400,7 @@
     <p class="ib-text">Детали и сроки подскажу при выборе формата — напишите в чат после просмотра тарифов.</p>
   </div>
   <div id="tariffs"></div>
+  <div class="tg-desktop-spacer" aria-hidden="true"></div>
 
   <div class="section-h reveal" id="sec-earn"><span class="bar"></span><h2>Сколько можно заработать</h2></div>
   <div class="glass earn-card reveal">
@@ -424,16 +427,17 @@
   <div class="res-scroll" id="resScroll"></div>
   <a class="site-link reveal" id="siteLink" href="https://vadjik.com/results">Больше историй и отзывов на сайте →</a>
 
-  <div style="height:30px"></div>
+  <div class="cta-bar reveal"><div class="inner">
+    <button class="cta-main btn-fire" id="ctaMain" onclick="book()">🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">остаётесь здесь · цены «было → стало»</span></button>
+    <button class="cta-ask" onclick="openContact()">💬 Есть вопросы — написать Вадиму</button>
+  </div></div>
+
+  <div style="height:24px"></div>
 </div>
 
 <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
-<div class="cta-bar"><div class="inner">
-  <button class="cta-main btn-fire" id="ctaMain" onclick="book()">🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">остаётесь здесь · цены «было → стало»</span></button>
-  <button class="cta-ask" onclick="openContact()">💬 Есть вопросы — написать Вадиму</button>
-</div></div>
 
 <script>
 const params = new URLSearchParams(location.search);
@@ -446,36 +450,27 @@ function isWideDesktop(){
 }
 function tgSafeBottom(){
   if (!TG) return 0;
-  var pf = (TG.platform || '').toLowerCase();
   var sa = TG.safeAreaInset || {};
   var csa = TG.contentSafeAreaInset || {};
-  var bottom = Math.max(0, (sa.bottom || 0) + (csa.bottom || 0));
-  if (bottom === 0 && isWideDesktop()) {
-    if (TG.isFullscreen) bottom = 56;
-    else if (pf === 'tdesktop' || pf === 'web' || pf === 'macos' || pf === 'weba') bottom = 32;
-  }
-  return bottom;
+  return Math.max(0, (sa.bottom || 0) + (csa.bottom || 0));
 }
-function applyTelegramViewport(){
+function tgDesktopChrome(){
+  if (!TG || !isWideDesktop()) return 0;
+  var inset = tgSafeBottom();
+  if (inset > 0) return inset;
+  if (TG.isFullscreen) return 80;
+  var pf = (TG.platform || '').toLowerCase();
+  if (pf === 'tdesktop' || pf === 'web' || pf === 'macos' || pf === 'weba') return 56;
+  return 40;
+}
+function applyTelegramInsets(){
   if (!TG) return;
-  var h = TG.viewportStableHeight || TG.viewportHeight;
-  if (h) {
-    document.documentElement.style.setProperty('--tg-viewport-height', h + 'px');
-    document.documentElement.style.height = h + 'px';
-  }
+  var chrome = tgDesktopChrome();
   document.documentElement.style.setProperty('--tg-safe-bottom', tgSafeBottom() + 'px');
-}
-function updateBottomInsets(){
-  applyTelegramViewport();
-  var sb = tgSafeBottom();
-  var cta = document.querySelector('.cta-bar');
-  if (cta) {
-    cta.style.bottom = sb + 'px';
-    var ctaH = cta.offsetHeight;
-    document.body.style.paddingBottom = (ctaH + sb + 16) + 'px';
-    var toast = document.getElementById('appToast');
-    if (toast) toast.style.bottom = (ctaH + sb + 14) + 'px';
-  }
+  document.documentElement.style.setProperty('--tg-desktop-chrome', chrome + 'px');
+  document.body.classList.toggle('is-tg-desktop', isWideDesktop());
+  var h = TG.viewportStableHeight || TG.viewportHeight;
+  if (h) document.documentElement.style.height = h + 'px';
 }
 function initTelegramViewport(){
   if (!TG) return;
@@ -486,39 +481,34 @@ function initTelegramViewport(){
   }
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
-  applyTelegramViewport();
-  updateBottomInsets();
+  applyTelegramInsets();
   setTimeout(function(){
     TG.expand();
     if (TG.requestFullscreen && isWideDesktop()) {
       try { TG.requestFullscreen(); } catch(e) {}
     }
-    applyTelegramViewport();
-    updateBottomInsets();
+    applyTelegramInsets();
   }, 300);
-  setTimeout(updateBottomInsets, 800);
+  setTimeout(applyTelegramInsets, 800);
   if (TG.onEvent) {
-    TG.onEvent('viewportChanged', updateBottomInsets);
-    TG.onEvent('safeAreaChanged', updateBottomInsets);
-    TG.onEvent('contentSafeAreaChanged', updateBottomInsets);
+    TG.onEvent('viewportChanged', applyTelegramInsets);
+    TG.onEvent('safeAreaChanged', applyTelegramInsets);
+    TG.onEvent('contentSafeAreaChanged', applyTelegramInsets);
     TG.onEvent('fullscreenChanged', function(){
-      setTimeout(updateBottomInsets, 50);
-      setTimeout(updateBottomInsets, 350);
+      setTimeout(applyTelegramInsets, 50);
+      setTimeout(applyTelegramInsets, 350);
     });
   }
 }
 initTelegramViewport();
-window.addEventListener('resize', updateBottomInsets);
+window.addEventListener('resize', applyTelegramInsets);
 if (TG) {
   (function(){
     function pingBot(data){
       if(!TG || !TG.sendData) return;
       try { TG.sendData(data); } catch(e) {}
     }
-    window.addEventListener('pagehide', function(){
-      pingBot('webapp_open');
-    });
-    setTimeout(function(){ pingBot('webapp_ready'); }, 30000);
+    pingBot('webapp_open');
   })();
 }
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
