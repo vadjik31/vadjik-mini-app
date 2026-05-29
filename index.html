@@ -431,36 +431,14 @@ if (TG) {
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
   (function(){
-    var botUser = params.get('bot') || 'vadjjik1_bot';
-    function pingBot(startParam){
-      var deep = 'https://t.me/' + botUser + '?start=' + startParam;
-      if(TG.openTelegramLink){
-        try { TG.openTelegramLink(deep); return true; } catch(e) {}
-      }
-      if(TG.sendData){
-        try { TG.sendData(startParam === 'wa_ready' ? 'webapp_ready' : 'webapp_open'); return true; } catch(e2) {}
-      }
-      return false;
+    function pingBot(data){
+      if(!TG || !TG.sendData) return;
+      try { TG.sendData(data); } catch(e) {}
     }
-    if(!sessionStorage.getItem('wa_open_ping')){
-      setTimeout(function(){
-        if(sessionStorage.getItem('wa_open_ping')) return;
-        sessionStorage.setItem('wa_open_ping','1');
-        pingBot('wa_open');
-      }, 2000);
-    }
-    var paySent = false;
-    function notifyPayReady(){
-      if(paySent) return;
-      paySent = true;
-      pingBot('wa_ready');
-    }
-    setTimeout(notifyPayReady, 30000);
     window.addEventListener('pagehide', function(){
-      if(TG.sendData){
-        try { TG.sendData('webapp_open'); } catch(e) {}
-      }
+      pingBot('webapp_open');
     });
+    setTimeout(function(){ pingBot('webapp_ready'); }, 30000);
   })();
 }
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
@@ -687,11 +665,16 @@ function openExternal(url){
 
 function openHowmany(){
   if(!HOWMANY){
-    showToast('Калькулятор скоро будет доступен. Напишите Вадиму.');
-    openContact();
+    showToast('Калькулятор — кнопка «Сколько заработать» в меню бота внизу');
     return;
   }
-  openExternal(HOWMANY);
+  if(TG && TG.sendData){
+    try {
+      TG.sendData('open_howmany');
+      return;
+    } catch(e) {}
+  }
+  showToast('Закройте это окно и нажмите «💸 Сколько заработать» в меню внизу');
 }
 function openTariffPage(i){
   var t = TARIFFS[i];
@@ -882,6 +865,22 @@ function initPromoBar(){
 }
 initPromoBar();
 if(isDiscountVisible()) renderTariffs(false);
+
+(function(){
+  var sec=document.getElementById('sec-earn');
+  var navLink=document.querySelector('a[href="#sec-earn"]');
+  if(HOWMANY){
+    if(sec) sec.style.display='';
+    if(navLink) navLink.style.display='';
+  } else {
+    if(sec) sec.style.display='none';
+    if(navLink) navLink.style.display='none';
+  }
+  var hint=document.getElementById('howmanyHint');
+  if(hint && !HOWMANY){
+    hint.textContent='Калькулятор — кнопка «💸 Сколько заработать» в меню бота внизу.';
+  }
+})();
 
 </script>
 </body>
