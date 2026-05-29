@@ -502,15 +502,6 @@ function initTelegramViewport(){
 }
 initTelegramViewport();
 window.addEventListener('resize', applyTelegramInsets);
-if (TG) {
-  (function(){
-    function pingBot(data){
-      if(!TG || !TG.sendData) return;
-      try { TG.sendData(data); } catch(e) {}
-    }
-    pingBot('webapp_open');
-  })();
-}
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const RESULTS = params.get('results') || 'https://vadjik.com/results';
