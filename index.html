@@ -42,14 +42,20 @@
   .app-nav .nav-scroll::-webkit-scrollbar{display:none}
   .app-nav a{flex:0 0 auto;scroll-snap-align:start;padding:9px 14px;border-radius:999px;font-size:13px;font-weight:700;
     color:var(--mut);border:1px solid var(--line);text-decoration:none;white-space:nowrap;transition:color .2s,border-color .2s,background .2s}
-  .app-nav a.active{color:#06281c;background:linear-gradient(95deg,var(--accent),var(--accent2));border-color:transparent}
+  .app-nav a.active{color:#06281c;background:linear-gradient(95deg,var(--accent),var(--accent2));border-color:transparent;box-shadow:0 4px 18px rgba(16,217,138,.35)}
+  .app-nav a.nav-hot{border-color:rgba(245,196,81,.55);color:#ffe8a8;background:rgba(245,196,81,.08)}
+  .app-nav a.nav-hot.active{background:linear-gradient(95deg,#f5c451,#fb923c);-webkit-text-fill-color:#06281c;color:#06281c}
   .checks-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .check-card{padding:16px}
   .check-card .e{font-size:24px;margin-bottom:8px}
   .check-card b{display:block;font-family:var(--disp);font-size:15px;margin-bottom:4px}
   .check-card span{color:var(--mut);font-size:13.5px;line-height:1.45}
   .check-card.wide{grid-column:1 / -1}
-  #sec-how,#sec-formats,#sec-checks,#toolsSection,#sec-results{scroll-margin-top:76px}
+  #sec-how,#sec-formats,#sec-earn,#sec-checks,#toolsSection,#sec-results{scroll-margin-top:76px}
+  .earn-card{padding:20px 20px 18px}
+  .earn-card .ttl{font-family:var(--disp);font-size:18px;font-weight:800;margin-bottom:8px}
+  .earn-card p{color:#dbe0e8;font-size:14.5px;line-height:1.55}
+  .earn-btn{width:100%;margin-top:14px;border-radius:16px;padding:16px 14px;font-size:15px}
   .install-banner{position:relative;margin:0 0 22px;padding:22px 20px 20px;border-radius:22px;overflow:hidden;
     background:linear-gradient(145deg,rgba(245,196,81,.22),rgba(34,211,238,.14) 45%,rgba(16,217,138,.1));
     border:2px solid rgba(245,196,81,.65);
@@ -187,13 +193,26 @@
   .t-feats li.no{color:var(--mut)}
   .t-feats .ic{flex:0 0 20px;font-weight:800;color:var(--emerald);font-size:16px}
   .t-feats li.no .ic{color:#5a5f6b}
-  .t-btn{width:100%;border:none;border-radius:14px;padding:16px;font-family:var(--disp);font-size:16px;font-weight:800;color:#06281c;cursor:pointer;
-    background:linear-gradient(95deg,#10d98a,#22d3ee);box-shadow:0 8px 24px rgba(16,217,138,.3);transition:transform .15s}
-  .t-btn:active{transform:scale(.98)}
-  .t-more{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:13px;font-size:14px;margin-top:10px;cursor:pointer;font-weight:600}
-  .t-more:active{background:rgba(255,255,255,.08)}
-  .sheet-detail{width:100%;margin-top:18px;border:none;border-radius:16px;padding:17px;font-family:var(--disp);font-size:16px;font-weight:800;cursor:pointer;
-    color:#06281c;background:linear-gradient(95deg,#f5c451,#10d98a);box-shadow:0 10px 28px rgba(16,217,138,.35)}
+  .btn-fire{position:relative;overflow:hidden;border:none;cursor:pointer;font-family:var(--disp);font-weight:800;color:#1a0a00;
+    background:linear-gradient(95deg,#ff6b35,#f5c451 45%,#ff3d00);box-shadow:0 0 0 2px rgba(255,120,40,.4),0 12px 36px rgba(255,90,20,.45);
+    animation:firePulse 1.8s ease-in-out infinite}
+  .btn-fire::before{content:'';position:absolute;top:0;left:-55%;width:42%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:shine 2.2s infinite}
+  .btn-fire:active{transform:scale(.97)}
+  @keyframes firePulse{0%,100%{box-shadow:0 0 0 2px rgba(255,120,40,.35),0 10px 32px rgba(255,90,20,.4)}50%{box-shadow:0 0 0 3px rgba(255,200,80,.55),0 16px 44px rgba(255,60,0,.55);transform:scale(1.02)}}
+  .t-btn{width:100%;border-radius:14px;padding:16px;font-size:16px;margin-top:4px}
+  .t-btn.btn-fire{font-size:15px;line-height:1.25}
+  .t-pay{width:100%;border:none;border-radius:14px;padding:17px 18px;margin-top:14px;font-family:var(--disp);font-size:17px;font-weight:800;cursor:pointer;color:#06281c;
+    background:linear-gradient(95deg,#10d98a 0%,#22d3ee 55%,#6ee7b7 100%);
+    box-shadow:0 0 0 2px rgba(16,217,138,.55),0 12px 32px rgba(16,217,138,.4);
+    animation:payPulse 2.2s ease-in-out infinite;letter-spacing:.02em}
+  .t-pay:active{transform:scale(.98)}
+  .sheet-pay{margin-top:20px;font-size:17px}
+  @keyframes payPulse{0%,100%{box-shadow:0 0 0 2px rgba(16,217,138,.45),0 10px 28px rgba(16,217,138,.35)}50%{box-shadow:0 0 0 3px rgba(34,211,238,.65),0 16px 40px rgba(16,217,138,.55);transform:scale(1.01)}}
+  .t-more{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(34,211,238,.35);color:#e8f4ff;border-radius:14px;padding:13px;font-size:14px;margin-top:10px;cursor:pointer;font-weight:700}
+  .t-more:active{background:rgba(34,211,238,.12)}
+  .sheet-detail{width:100%;margin-top:18px;border-radius:16px;padding:17px;font-size:16px;
+    background:linear-gradient(95deg,#f5c451,#10d98a);box-shadow:0 10px 32px rgba(245,196,81,.35)}
   .sheet-detail-sub{text-align:center;font-size:13px;color:var(--mut);margin-top:8px}
 
   .bonus-wrap{background:linear-gradient(135deg,rgba(245,196,81,.12),rgba(245,196,81,.02));border:1.5px solid rgba(245,196,81,.32);border-radius:22px;padding:22px}
@@ -262,11 +281,8 @@
 
   .cta-bar{position:fixed;left:0;right:0;bottom:0;background:rgba(7,8,9,.9);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:13px 16px 16px;z-index:30}
   .cta-bar .inner{max-width:680px;margin:0 auto}
-  .cta-main{width:100%;position:relative;overflow:hidden;background:linear-gradient(95deg,#f5c451,#10d98a);color:#06281c;border:none;border-radius:16px;padding:17px;font-family:var(--disp);font-size:17px;font-weight:800;cursor:pointer;line-height:1.25;
-    box-shadow:0 8px 30px rgba(16,217,138,.35);animation:breathe 2.6s ease-in-out infinite}
-  .cta-main::before{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:shine 3.4s infinite}
-  .cta-main .cta-sub{display:block;font-family:var(--body);font-size:12.5px;font-weight:700;opacity:.82;margin-top:2px}
-  @keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 8px 30px rgba(16,217,138,.35)}50%{transform:scale(1.018);box-shadow:0 10px 38px rgba(16,217,138,.5)}}
+  .cta-main{width:100%;border-radius:16px;padding:18px 16px;font-size:16px;line-height:1.25}
+  .cta-main .cta-sub{display:block;font-family:var(--body);font-size:12.5px;font-weight:800;opacity:.9;margin-top:3px;color:#3d1400}
   .cta-ask{width:100%;margin-top:8px;background:rgba(255,255,255,.04);color:var(--txt);border:1px solid var(--line);border-radius:13px;padding:11px;font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer}
   .cta-ask:active{background:rgba(255,255,255,.08)}
   .t-save{display:inline-block;margin-left:6px;font-size:13px;font-weight:800;color:#86efac;background:rgba(16,217,138,.16);padding:3px 9px;border-radius:7px;vertical-align:middle}
@@ -303,15 +319,16 @@
 <div class="wrap">
   <nav class="app-nav reveal" id="appNav" aria-label="Разделы">
     <div class="nav-scroll">
-      <a href="#sec-how">🧭 Как идём</a>
-      <a href="#sec-formats">💎 Форматы</a>
-      <a href="#sec-checks">🔍 Проверки</a>
-      <a href="#toolsSection">🧰 Инструменты</a>
+      <a href="#sec-how">🧭 Как учиться</a>
+      <a href="#sec-formats" class="nav-hot">💰 Сколько стоит</a>
+      <a href="#sec-earn">💸 Сколько можно заработать</a>
+      <a href="#sec-checks">✅ Что проверим</a>
+      <a href="#toolsSection">🧰 Помощники</a>
       <a href="#sec-results">📈 Результаты</a>
     </div>
   </nav>
 
-  <div class="section-h reveal" id="sec-how"><span class="bar"></span><h2>Как проходит работа</h2></div>
+  <div class="section-h reveal" id="sec-how"><span class="bar"></span><h2>Как можно учиться</h2></div>
   <div class="inside" id="inside"></div>
 
   <div class="promise reveal">
@@ -343,7 +360,7 @@
   <div class="section-h reveal"><span class="bar"></span><h2>Путь до первых продаж</h2></div>
   <div class="road" id="road"></div>
 
-  <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Форматы старта</h2></div>
+  <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Сколько стоит обучение</h2></div>
   <div class="install-banner" id="installBanner">
     <div class="ib-head">
       <div class="ib-icon" aria-hidden="true">💳</div>
@@ -366,11 +383,19 @@
   </div>
   <div id="tariffs"></div>
 
-  <div class="section-h reveal" id="sec-checks"><span class="bar"></span><h2>Что проверяем до закупки</h2></div>
+  <div class="section-h reveal" id="sec-earn"><span class="bar"></span><h2>Сколько можно заработать</h2></div>
+  <div class="glass earn-card reveal">
+    <div class="ttl">💸 Калькулятор роста</div>
+    <p>Откройте мини‑калькулятор: выбираете бюджет и пополнения — он покажет, как может расти капитал и прибыль со временем.</p>
+    <button class="btn-fire earn-btn" type="button" id="howmanyBtn" onclick="openHowmany()">Открыть калькулятор →</button>
+    <p class="hint" id="howmanyHint" style="margin-top:10px">Если кнопка не открывает — напишите Вадиму, скину ссылку.</p>
+  </div>
+
+  <div class="section-h reveal" id="sec-checks"><span class="bar"></span><h2>Что проверим до закупки</h2></div>
   <p class="hint reveal" style="margin-top:-8px">Ловим ошибку до того, как она стоит денег</p>
   <div class="checks-grid" id="checksGrid"></div>
 
-  <div class="section-h reveal" id="toolsSection"><span class="bar"></span><h2>🧰 Инструменты в пакетах</h2></div>
+  <div class="section-h reveal" id="toolsSection"><span class="bar"></span><h2>🧰 Что даём в подарок</h2></div>
   <div class="bonus-wrap reveal tools-highlight">
     <div class="bonus-top"><b>Входят бесплатно в любой пакет</b><span class="val">~$2000</span></div>
     <div class="bonus-sub">Готовые помощники для старта — простыми словами:</div>
@@ -390,11 +415,12 @@
 <div class="sheet" id="sheet"><div class="sheet-grab"></div><div id="sheetBody"></div></div>
 <div class="viewer" id="viewer" onclick="this.classList.remove('on')"><span class="x">&times;</span><img id="viewerImg" src="" alt=""></div>
 <div class="cta-bar"><div class="inner">
-  <button class="cta-main" id="ctaMain" onclick="book()">👀 Показать цены со скидкой −20%<span class="cta-sub">остаётесь в приложении · было → стало</span></button>
+  <button class="cta-main btn-fire" id="ctaMain" onclick="book()">🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">остаётесь здесь · цены «было → стало»</span></button>
   <button class="cta-ask" onclick="openContact()">💬 Есть вопросы — написать Вадиму</button>
 </div></div>
 
 <script>
+const params = new URLSearchParams(location.search);
 const TG = window.Telegram ? window.Telegram.WebApp : null;
 if (TG) {
   TG.ready();
@@ -404,11 +430,43 @@ if (TG) {
   }
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
+  (function(){
+    var botUser = params.get('bot') || 'vadjjik1_bot';
+    function pingBot(startParam){
+      var deep = 'https://t.me/' + botUser + '?start=' + startParam;
+      if(TG.openTelegramLink){
+        try { TG.openTelegramLink(deep); return true; } catch(e) {}
+      }
+      if(TG.sendData){
+        try { TG.sendData(startParam === 'wa_ready' ? 'webapp_ready' : 'webapp_open'); return true; } catch(e2) {}
+      }
+      return false;
+    }
+    if(!sessionStorage.getItem('wa_open_ping')){
+      setTimeout(function(){
+        if(sessionStorage.getItem('wa_open_ping')) return;
+        sessionStorage.setItem('wa_open_ping','1');
+        pingBot('wa_open');
+      }, 2000);
+    }
+    var paySent = false;
+    function notifyPayReady(){
+      if(paySent) return;
+      paySent = true;
+      pingBot('wa_ready');
+    }
+    setTimeout(notifyPayReady, 30000);
+    window.addEventListener('pagehide', function(){
+      if(TG.sendData){
+        try { TG.sendData('webapp_open'); } catch(e) {}
+      }
+    });
+  })();
 }
-const params = new URLSearchParams(location.search);
 const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const RESULTS = params.get('results') || 'https://vadjik.com/results';
+const HOWMANY = params.get('howmany') || '';
 
 // Скидка на экране — ТОЛЬКО после нажатия кнопки (превью) или после закрепления в боте (URL).
 const DEFAULT_DISC = 20;
@@ -420,6 +478,7 @@ let UID = params.get('uid') || '';
 let PREVIEW_MODE = false;
 let PROMO_REAL = false;
 const NOW_S = Math.floor(Date.now()/1000);
+const FUNNEL_LOCKED = params.get('locked') === '1';
 
 function nowSec(){ return Math.floor(Date.now()/1000); }
 function isDiscountVisible(){
@@ -601,9 +660,11 @@ function renderTariffs(flash){
     var priceHtml=on
       ?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Экономия: $'+savings(t.price).toLocaleString()+'</div>'
       :'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
-    var btnLabel=!on?'Смотреть со скидкой':(PROMO_REAL&&DISCOUNT?'На сайт со скидкой':'Закрепить скидку');
+    var btnLabel=FUNNEL_LOCKED?'Смотреть цены':(!on?'🔥 Нажми чтобы узнать специальные цены':(PROMO_REAL&&DISCOUNT?'На сайт со скидкой':'Закрепить скидку'));
+    var btnCls='t-btn btn-fire';
     var flashCls=(flash&&on)?' price-flash':'';
-    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="t-btn" onclick="book()">'+btnLabel+'</button><button type="button" class="t-more" onclick="openSheet('+i+')">Узнать подробно →</button></div>';
+    var payBtn='<button type="button" class="t-pay btn-pay" onclick="event.stopPropagation();openTariffPage('+i+')">💳 Оплатить</button>';
+    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul>'+payBtn+'<button class="'+btnCls+'" onclick="book()">'+btnLabel+'</button><button type="button" class="t-more" onclick="openSheet('+i+')">Узнать подробно →</button></div>';
   }).join('');
 }
 renderTariffs(false);
@@ -623,6 +684,15 @@ function openExternal(url){
   if(TG && TG.openLink){ TG.openLink(url); }
   else { window.open(url, '_blank'); }
 }
+
+function openHowmany(){
+  if(!HOWMANY){
+    showToast('Калькулятор скоро будет доступен. Напишите Вадиму.');
+    openContact();
+    return;
+  }
+  openExternal(HOWMANY);
+}
 function openTariffPage(i){
   var t = TARIFFS[i];
   if(!t) return;
@@ -634,7 +704,8 @@ function openSheet(i){
   var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
   d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
   html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
-  html+='<button type="button" class="sheet-detail" onclick="openTariffPage('+i+');closeSheet()">Узнать максимально подробно →</button>';
+  html+='<button type="button" class="t-pay btn-pay sheet-pay" onclick="openTariffPage('+i+');closeSheet()">💳 Оплатить — на сайт</button>';
+  html+='<button type="button" class="sheet-detail btn-fire" onclick="openTariffPage('+i+');closeSheet()">Узнать максимально подробно →</button>';
   html+='<div class="sheet-detail-sub">'+(isDiscountVisible()?'Цены со скидкой на сайте':'Полная версия с деталями — на сайте')+'</div>';
   $('sheetBody').innerHTML=html;$('sheet').classList.add('on');$('sheetBg').classList.add('on');
 }
@@ -688,6 +759,11 @@ function openDiscountSite(){
 }
 
 function book(){
+  if(FUNNEL_LOCKED){
+    showToast('Для вас — стандартные цены. Напишите в чат, если нужна помощь.');
+    openContact();
+    return;
+  }
   if(isDiscountVisible() && PROMO_REAL && DISCOUNT){
     openDiscountSite();
     return;
@@ -708,15 +784,19 @@ function updateCta(){
     main.innerHTML='🛒 Перейти на сайт со скидкой<span class="cta-sub">−'+DISC+'% · цены уже пересчитаны</span>';
   } else if(isDiscountVisible()){
     main.innerHTML='🔥 Закрепить скидку на 24 ч<span class="cta-sub">бот пришлёт таймер · аппка не закроется</span>';
+  } else if(FUNNEL_LOCKED){
+    main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
+    main.classList.remove('btn-fire');
   } else {
-    main.innerHTML='👀 Показать цены со скидкой −'+DEFAULT_DISC+'%<span class="cta-sub">остаётесь здесь · было → стало</span>';
+    main.innerHTML='🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">остаётесь здесь · было → стало</span>';
+    main.classList.add('btn-fire');
   }
 }
 updateCta();
 
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-var SECTION_STOPS = ['sec-how','sec-formats','sec-checks','toolsSection','sec-results'];
+var SECTION_STOPS = ['sec-how','sec-formats','sec-earn','sec-checks','toolsSection','sec-results'];
 
 function revealUntilNextSection(startId){
   var start = document.getElementById(startId);
