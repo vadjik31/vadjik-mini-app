@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
+<!-- app-build:20260530b -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,7 +62,7 @@
   .check-card b{display:block;font-family:var(--disp);font-size:15px;margin-bottom:4px}
   .check-card span{color:var(--mut);font-size:13.5px;line-height:1.45}
   .check-card.wide{grid-column:1 / -1}
-  #sec-how,#sec-formats,#sec-earn,#sec-checks,#toolsSection,#sec-results{scroll-margin-top:76px}
+  #sec-why,#sec-formats,#sec-earn,#sec-road,#sec-results{scroll-margin-top:76px}
   #sec-formats,#tariffs{scroll-margin-bottom:calc(24px + var(--tg-safe-bottom) + var(--tg-desktop-chrome))}
   .earn-card{padding:20px 20px 18px}
   .earn-card .ttl{font-family:var(--disp);font-size:18px;font-weight:800;margin-bottom:8px}
@@ -330,97 +331,47 @@
 <div class="hero">
   <div class="kicker">Бизнес на Amazon</div>
   <h1>Amazon с <span class="grad">Вадимом</span></h1>
-  <p>Форматы старта, поддержка и реальные результаты</p>
+  <p>Помогаю выйти на первые продажи на Amazon — с нуля, из любой страны. Ниже цены, форматы и результаты учеников.</p>
 </div>
 <div id="promoBar" style="display:none"></div>
 <div class="app-toast" id="appToast" aria-live="polite"></div>
 <div class="wrap">
   <nav class="app-nav reveal" id="appNav" aria-label="Разделы">
     <div class="nav-scroll">
-      <a href="#sec-how">🧭 Как учиться</a>
-      <a href="#sec-formats" class="nav-hot">💰 Сколько стоит</a>
-      <a href="#sec-earn">💸 Сколько можно заработать</a>
-      <a href="#sec-checks">✅ Что проверим</a>
-      <a href="#toolsSection">🧰 Помощники</a>
+      <a href="#sec-formats" class="nav-hot">💰 Цены</a>
+      <a href="#sec-why">🤝 Почему с нами</a>
+      <a href="#sec-road">🧭 Как идём</a>
+      <a href="#sec-earn">💸 Калькулятор</a>
       <a href="#sec-results">📈 Результаты</a>
     </div>
   </nav>
 
-  <div class="section-h reveal" id="sec-how"><span class="bar"></span><h2>Как можно учиться</h2></div>
-  <div class="inside" id="inside"></div>
-
-  <div class="promise reveal">
-    <div class="ttl"><span class="e">🤝</span> Мы не бросаем на полпути</div>
-    <p>Главное отличие: мы <span class="hl">на связи и ведём вас до первых реальных продаж</span>. Не «вот вам уроки, дальше сами» — мы разбираем ваши вопросы, смотрим вашу ситуацию и помогаем пройти каждый шаг. Пока не увидите первый результат.</p>
-  </div>
-
-  <!-- ЧТО ВХОДИТ В БОНУС -->
-  <div class="bonus-banner reveal">
-    <div class="bb-head">
-      <div class="bb-icon">🎁</div>
-      <div>
-        <div class="bb-title">Что входит в спец-цену</div>
-        <div class="bb-sub">Бонус на 24 часа:</div>
-      </div>
-    </div>
-    <div class="bb-items">
-      <div class="bb-item"><span class="bb-num">−20%</span><div><b>Скидка на любой пакет обучения</b><span>Цены ниже уже пересчитаны</span></div></div>
-      <div class="bb-item"><span class="bb-num">🛠</span><div><b>Инструменты в пакете</b><span>~$2 000 по отдельности — в обучение входят бесплатно</span></div></div>
-    </div>
-  </div>
-
-  <div class="section-h reveal"><span class="bar"></span><h2>Почему с нами</h2></div>
-  <div class="why" id="why"></div>
-
-  <div class="section-h reveal"><span class="bar"></span><h2>Сам или с нами</h2></div>
-  <div class="vs glass reveal"><div class="vs-head"><div class="h-lbl"></div><div class="h-self">Самому</div><div class="h-us">С нами</div></div><div id="vsRows"></div></div>
-
-  <div class="section-h reveal"><span class="bar"></span><h2>Путь до первых продаж</h2></div>
-  <div class="road" id="road"></div>
-
-  <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Сколько стоит обучение</h2></div>
-  <div class="install-banner" id="installBanner">
-    <div class="ib-head">
-      <div class="ib-icon" aria-hidden="true">💳</div>
-      <div>
-        <div class="ib-badge">Без переплаты</div>
-        <div class="ib-title">Оплата частями</div>
-        <div class="ib-sub">Не обязательно платить всю сумму сразу</div>
-      </div>
-    </div>
-    <div class="ib-highlight">
-      <span class="ib-big">Стоимость можно разделить на <em>несколько равных платежей</em></span>
-      <span class="ib-note">Удобно на старте — без лишних переплат</span>
-    </div>
-    <div class="ib-chips" aria-hidden="true">
-      <div class="ib-chip"><b>1</b><span>платёж</span></div>
-      <div class="ib-chip"><b>2</b><span>платёж</span></div>
-      <div class="ib-chip"><b>3</b><span>платёж</span></div>
-    </div>
-    <p class="ib-text">Детали и сроки подскажу при выборе формата — напишите в чат после просмотра тарифов.</p>
-  </div>
+  <!-- 1. ЦЕНЫ СРАЗУ — человек за этим и пришёл -->
+  <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Форматы и цены</h2></div>
+  <p class="hint reveal" style="margin-top:-8px">Можно платить частями · инструменты (~$2000) входят бесплатно в любой пакет</p>
   <div id="tariffs"></div>
   <div class="tg-desktop-spacer" aria-hidden="true"></div>
 
+  <!-- 2. ПОЧЕМУ С НАМИ — одна наглядная таблица вместо 4 секций -->
+  <div class="section-h reveal" id="sec-why"><span class="bar"></span><h2>Сам или с нами</h2></div>
+  <p class="hint reveal" style="margin-top:-8px">Главное: мы на связи и ведём до первых реальных продаж — не «уроки и дальше сами»</p>
+  <div class="vs glass reveal"><div class="vs-head"><div class="h-lbl"></div><div class="h-self">Самому</div><div class="h-us">С нами</div></div><div id="vsRows"></div></div>
+
+  <!-- 3. КАК ИДЁМ — путь 6 шагов -->
+  <div class="section-h reveal" id="sec-road"><span class="bar"></span><h2>Как идём до первых продаж</h2></div>
+  <p class="hint reveal" style="margin-top:-8px">Ошибку ловим до того, как она стоит денег</p>
+  <div class="road" id="road"></div>
+
+  <!-- 4. КАЛЬКУЛЯТОР -->
   <div class="section-h reveal" id="sec-earn"><span class="bar"></span><h2>Сколько можно заработать</h2></div>
   <div class="glass earn-card reveal">
     <div class="ttl">💸 Калькулятор роста</div>
-    <p>Откройте мини‑калькулятор: выбираете бюджет и пополнения — он покажет, как может расти капитал и прибыль со временем.</p>
+    <p>Выберите бюджет и пополнения — покажет, как может расти капитал и прибыль со временем.</p>
     <button class="btn-fire earn-btn" type="button" id="howmanyBtn" onclick="openHowmany()">Открыть калькулятор →</button>
     <p class="hint" id="howmanyHint" style="margin-top:10px">Если кнопка не открывает — напишите Вадиму, скину ссылку.</p>
   </div>
 
-  <div class="section-h reveal" id="sec-checks"><span class="bar"></span><h2>Что проверим до закупки</h2></div>
-  <p class="hint reveal" style="margin-top:-8px">Ловим ошибку до того, как она стоит денег</p>
-  <div class="checks-grid" id="checksGrid"></div>
-
-  <div class="section-h reveal" id="toolsSection"><span class="bar"></span><h2>🧰 Что даём в подарок</h2></div>
-  <div class="bonus-wrap reveal tools-highlight">
-    <div class="bonus-top"><b>Входят бесплатно в любой пакет</b><span class="val">~$2000</span></div>
-    <div class="bonus-sub">Готовые помощники для старта — простыми словами:</div>
-    <div id="bonuses"></div>
-  </div>
-
+  <!-- 5. РЕЗУЛЬТАТЫ -->
   <div class="section-h reveal" id="sec-results"><span class="bar"></span><h2>Результаты учеников</h2><span class="cnt" id="resCnt"></span></div>
   <div class="disclaimer glass reveal">Это не обещание результата. Цифры зависят от бюджета, времени, выбранных товаров и того, насколько человек выполняет шаги.</div>
   <p class="hint">← листайте карточки →</p>
@@ -506,67 +457,87 @@ const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const RESULTS = params.get('results') || 'https://vadjik.com/results';
 const HOWMANY = params.get('howmany') || '';
+const PROMO_HOURS = parseInt(params.get('hours') || '24', 10) || 24;
 
-// Скидка на экране — ТОЛЬКО после нажатия кнопки (превью) или после закрепления в боте (URL).
+// Скидка — ТОЛЬКО после «Нажми чтобы узнать спец. цены» (бот выдаёт sig + deadline).
 const DEFAULT_DISC = 20;
-let DEADLINE = parseInt(params.get('deadline')||'0',10);
+const SITE_DISCOUNT = 'https://vadjik.com/faster_discount';
+const PROMO_LS_KEY = 'promo_v1';
+let DEADLINE = 0;
 let DISC = 0;
-let DISCOUNT = params.get('discount') || '';
-let SIG = params.get('sig') || '';
-let UID = params.get('uid') || '';
-let PREVIEW_MODE = false;
+let DISCOUNT = '';
+let SIG = '';
+let UID = '';
 let PROMO_REAL = false;
 const NOW_S = Math.floor(Date.now()/1000);
 const FUNNEL_LOCKED = params.get('locked') === '1';
 
 function nowSec(){ return Math.floor(Date.now()/1000); }
-function isDiscountVisible(){
-  return DEADLINE > nowSec() && DISC > 0 && (PROMO_REAL || PREVIEW_MODE);
+function tgUid(){
+  return TG && TG.initDataUnsafe && TG.initDataUnsafe.user
+    ? String(TG.initDataUnsafe.user.id) : '';
 }
-
-function persistPromoState(){
-  if (!PROMO_REAL) return;
+function buildDiscountLink(uid, deadline, sig){
+  return SITE_DISCOUNT + '?uid=' + encodeURIComponent(uid)
+    + '&deadline=' + deadline + '&sig=' + encodeURIComponent(sig);
+}
+function isDiscountVisible(){
+  return PROMO_REAL && DEADLINE > nowSec() && DISC > 0 && SIG && UID;
+}
+function resetDiscountDisplay(){
+  PROMO_REAL = false;
+  DISC = 0;
+  DEADLINE = 0;
+  DISCOUNT = '';
+  SIG = '';
+  UID = '';
+}
+function setPromoActive(deadline, disc, sig, uid, discount){
+  DEADLINE = deadline;
+  DISC = disc;
+  SIG = sig;
+  UID = String(uid);
+  DISCOUNT = discount || buildDiscountLink(uid, deadline, sig);
+  PROMO_REAL = true;
+}
+function savePromoLocal(){
+  if(!PROMO_REAL) return;
   try {
-    localStorage.setItem('promo_v1', JSON.stringify({
-      deadline:DEADLINE, disc:DISC, discount:DISCOUNT, sig:SIG, uid:UID,
-      preview: false
+    localStorage.setItem(PROMO_LS_KEY, JSON.stringify({
+      deadline: DEADLINE, disc: DISC, sig: SIG, uid: UID, discount: DISCOUNT
     }));
   } catch(e) {}
 }
-
-function resetDiscountDisplay(){
-  if (PROMO_REAL) return;
-  PREVIEW_MODE = false;
-  DISC = 0;
-  DEADLINE = 0;
+function loadPromoLocal(){
+  try {
+    var saved = JSON.parse(localStorage.getItem(PROMO_LS_KEY) || 'null');
+    if(!saved || saved.deadline <= nowSec() || saved.disc <= 0 || !saved.sig || !saved.uid) return false;
+    var tu = tgUid();
+    if(tu && String(saved.uid) !== tu) return false;
+    setPromoActive(saved.deadline, saved.disc, saved.sig, saved.uid, saved.discount);
+    return true;
+  } catch(e) { return false; }
 }
-
-try {
+function applyPromoFromUrl(){
+  var tu = tgUid();
   var discUrl = parseInt(params.get('disc')||'0',10);
-  if (DEADLINE > NOW_S && discUrl > 0 && SIG && UID && DISCOUNT) {
-    DISC = discUrl;
-    PROMO_REAL = true;
-    PREVIEW_MODE = false;
-    persistPromoState();
-  } else {
-    const saved = JSON.parse(localStorage.getItem('promo_v1')||'null');
-    if (saved && !saved.preview && saved.deadline > NOW_S && saved.disc > 0
-        && saved.sig && saved.uid && saved.discount) {
-      DEADLINE = saved.deadline;
-      DISC = saved.disc;
-      DISCOUNT = saved.discount;
-      SIG = saved.sig;
-      UID = saved.uid;
-      PROMO_REAL = true;
-      PREVIEW_MODE = false;
-    } else {
+  var deadline = parseInt(params.get('deadline')||'0',10);
+  var sig = params.get('sig')||'';
+  var uid = params.get('uid')||'';
+  var discount = params.get('discount')||'';
+  if(deadline > NOW_S && discUrl > 0 && sig && uid){
+    if(tu && tu !== String(uid)){
       resetDiscountDisplay();
-      try { localStorage.removeItem('promo_v1'); } catch(e) {}
+      return;
     }
+    setPromoActive(deadline, discUrl, sig, uid, discount || buildDiscountLink(uid, deadline, sig));
+    savePromoLocal();
+    return;
   }
-} catch(e) {
+  if(loadPromoLocal()) return;
   resetDiscountDisplay();
 }
+applyPromoFromUrl();
 
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 function savings(p){ return p - discPrice(p); }
@@ -679,15 +650,8 @@ var io=new IntersectionObserver(function(es){
   });
 },{threshold:.1});
 
-$('inside').innerHTML = INSIDE.map(function(x,i){var w=(i===INSIDE.length-1&&INSIDE.length%2===1)?' wide':'';return '<div class="in-card glass reveal'+w+'"><div class="e">'+x.e+'</div><b>'+x.n+'</b><span>'+x.d+'</span></div>';}).join('');
-$('why').innerHTML = WHY.map(function(w){return '<div class="why-item glass reveal"><div class="n">'+w.e+'</div><div><b>'+w.n+'</b><span>'+w.d+'</span></div></div>';}).join('');
 $('vsRows').innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
 $('road').innerHTML = ROAD.map(function(s){return '<div class="step-r reveal"><div class="num">'+s.n+'</div><div class="body"><b>'+s.t+'</b><p>'+s.d+'</p></div></div>';}).join('');
-$('checksGrid').innerHTML = CHECKS.map(function(c,i){
-  var w=(i===CHECKS.length-1&&CHECKS.length%2===1)?' wide':'';
-  return '<div class="check-card glass reveal'+w+'"><div class="e">'+c.e+'</div><b>'+c.n+'</b><span>'+c.d+'</span></div>';
-}).join('');
-$('bonuses').innerHTML = BONUSES.map(function(b){return '<div class="bonus-item"><span class="e">'+b.e+'</span><div><b>'+b.n+'</b><span>'+b.d+'</span></div></div>';}).join('');
 $('resCnt').textContent = STUDENTS.length+" учеников";
 $('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
 
@@ -699,25 +663,36 @@ function renderTariffs(flash){
     var priceHtml=on
       ?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Экономия: $'+savings(t.price).toLocaleString()+'</div>'
       :'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
-    var btnLabel=FUNNEL_LOCKED?'Смотреть цены':(!on?'🔥 Нажми чтобы узнать специальные цены':(PROMO_REAL&&DISCOUNT?'На сайт со скидкой':'Закрепить скидку'));
+    var btnLabel=FUNNEL_LOCKED?'Смотреть цены':(!on?'🔥 Нажми чтобы узнать специальные цены':'🛒 На сайт со скидкой −'+DISC+'%');
     var btnCls='t-btn btn-fire';
     var flashCls=(flash&&on)?' price-flash':'';
-    var payBtn='<button type="button" class="t-pay btn-pay" onclick="event.stopPropagation();openTariffPage('+i+')">💳 Оплатить</button>';
-    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul>'+payBtn+'<button class="'+btnCls+'" onclick="book()">'+btnLabel+'</button><button type="button" class="t-more" onclick="openSheet('+i+')">Узнать подробно →</button></div>';
+    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="'+btnCls+'" onclick="book()">'+btnLabel+'</button><button type="button" class="t-more" onclick="openSheet('+i+')">Узнать подробно →</button></div>';
   }).join('');
 }
 renderTariffs(false);
 
-const SITE_ORIGIN = 'https://vadjik.com';
-
-function tariffPageUrl(t){
-  var slug = t.slug || t.id;
-  if(isDiscountVisible()){
-    return SITE_ORIGIN + '/discount/' + slug;
+function openDiscountSite(){
+  if(!isDiscountVisible() || !DISCOUNT){
+    showToast('Сначала нажмите «узнать специальные цены» — бонус только так');
+    return;
   }
-  return SITE_ORIGIN + '/' + slug;
+  openExternal(DISCOUNT);
 }
 
+function openSheet(i){
+  var t=TARIFFS[i],d=t.detail;
+  var priceStr=isDiscountVisible()?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
+  var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
+  d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
+  html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+  if(isDiscountVisible()){
+    html+='<button type="button" class="t-btn btn-fire sheet-pay" onclick="openDiscountSite();closeSheet()">🛒 На сайт — выбрать формат (−'+DISC+'%)</button>';
+  } else {
+    html+='<button type="button" class="t-btn btn-fire sheet-pay" onclick="book();closeSheet()">🔥 Узнать специальные цены</button>';
+  }
+  html+='<div class="sheet-detail-sub">'+(isDiscountVisible()?'На сайте все форматы и оплата — один раз по ссылке':'Сначала узнайте спец. цены здесь')+'</div>';
+  $('sheetBody').innerHTML=html;$('sheet').classList.add('on');$('sheetBg').classList.add('on');
+}
 function openExternal(url){
   if(!url) return;
   if(TG && TG.openLink){ TG.openLink(url); }
@@ -726,29 +701,19 @@ function openExternal(url){
 
 function openHowmany(){
   if(!HOWMANY){
-    showToast('Калькулятор — кнопка «Сколько можно заработать на Амазон» в меню бота');
+    showToast('Калькулятор — кнопка «💸 Посчитать мой доход» в меню бота');
     return;
   }
   openExternal(HOWMANY);
 }
-function openTariffPage(i){
-  var t = TARIFFS[i];
-  if(!t) return;
-  openExternal(tariffPageUrl(t));
-}
-function openSheet(i){
-  var t=TARIFFS[i],d=t.detail;
-  var priceStr=isDiscountVisible()?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
-  var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
-  d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
-  html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
-  html+='<button type="button" class="t-pay btn-pay sheet-pay" onclick="openTariffPage('+i+');closeSheet()">💳 Оплатить — на сайт</button>';
-  html+='<button type="button" class="sheet-detail btn-fire" onclick="openTariffPage('+i+');closeSheet()">Узнать максимально подробно →</button>';
-  html+='<div class="sheet-detail-sub">'+(isDiscountVisible()?'Цены со скидкой на сайте':'Полная версия с деталями — на сайте')+'</div>';
-  $('sheetBody').innerHTML=html;$('sheet').classList.add('on');$('sheetBg').classList.add('on');
-}
+
 function closeSheet(){$('sheet').classList.remove('on');$('sheetBg').classList.remove('on');}
 function viewImg(src){$('viewerImg').src=src;$('viewer').classList.add('on');}
+function botDeepLink(start){
+  var slug = params.get('bot') || 'vadjjik1_bot';
+  return 'https://t.me/' + slug.replace(/^@/,'') + '?start=' + start;
+}
+
 function tgLink(url){
   // надёжное открытие чата с Вадимом — не уходит в Saved Messages
   if(!url) return;
@@ -759,41 +724,20 @@ function tgLink(url){
 }
 function openContact(){ tgLink(CONTACT); }
 
-function activatePromoPreview(){
-  PREVIEW_MODE = true;
-  PROMO_REAL = false;
-  DISC = DEFAULT_DISC;
-  DEADLINE = nowSec() + 24 * 3600;
-  DISCOUNT = '';
-  renderTariffs(true);
-  document.querySelectorAll('#tariffs .tariff').forEach(function(el){
-    io.observe(el);
-  });
-  initPromoBar();
-  updateCta();
-  showToast('Готово: ниже цены «было → стало». Листайте к форматам ↓');
-  var el=$('tariffs');
-  if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth',block:'start'}); }, 350);
-}
-
 function claimPromoInBot(){
   if(TG && TG.sendData){
     TG.sendData('claim_promo');
-    showToast('Запрос ушёл в бот — проверьте чат: закрепим скидку на 24 ч');
+    showToast('Закрепляем скидку… Снова откройте «Форматы» из меню бота');
     if(TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
-  } else {
-    tgLink(CONTACT);
+    return;
   }
-}
-
-function openDiscountSite(){
-  var msg = 'Открыть сайт со скидкой −' + DISC + '%?';
-  if(TG && TG.showConfirm){
-    TG.showConfirm(msg, function(ok){
-      if(ok){ if(TG.openLink){TG.openLink(DISCOUNT);}else{window.open(DISCOUNT,'_blank');} }
-    });
-  } else if(TG&&TG.openLink){ TG.openLink(DISCOUNT); }
-  else { window.open(DISCOUNT,'_blank'); }
+  var url = botDeepLink('claim_promo');
+  if(TG && TG.openTelegramLink){
+    TG.openTelegramLink(url);
+    showToast('Откройте чат с ботом — там закрепим скидку на 24 ч');
+  } else {
+    tgLink(url);
+  }
 }
 
 function book(){
@@ -802,31 +746,23 @@ function book(){
     openContact();
     return;
   }
-  if(isDiscountVisible() && PROMO_REAL && DISCOUNT){
+  if(isDiscountVisible()){
     openDiscountSite();
     return;
   }
-  if(isDiscountVisible() && PREVIEW_MODE){
-    claimPromoInBot();
-    return;
-  }
-  if(!isDiscountVisible()){
-    activatePromoPreview();
-  }
+  claimPromoInBot();
 }
 
 function updateCta(){
   var main=$('ctaMain');
   if(!main) return;
-  if(isDiscountVisible() && PROMO_REAL && DISCOUNT){
-    main.innerHTML='🛒 Перейти на сайт со скидкой<span class="cta-sub">−'+DISC+'% · цены уже пересчитаны</span>';
-  } else if(isDiscountVisible()){
-    main.innerHTML='🔥 Закрепить скидку на 24 ч<span class="cta-sub">бот пришлёт таймер · аппка не закроется</span>';
+  if(isDiscountVisible()){
+    main.innerHTML='🛒 На сайт — выбрать формат<span class="cta-sub">−'+DISC+'% · '+PROMO_HOURS+' ч</span>';
   } else if(FUNNEL_LOCKED){
     main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
     main.classList.remove('btn-fire');
   } else {
-    main.innerHTML='🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">остаётесь здесь · было → стало</span>';
+    main.innerHTML='🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">без бонуса — обычные цены · бонус только после нажатия</span>';
     main.classList.add('btn-fire');
   }
 }
@@ -834,7 +770,7 @@ updateCta();
 
 document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
-var SECTION_STOPS = ['sec-how','sec-formats','sec-earn','sec-checks','toolsSection','sec-results'];
+var SECTION_STOPS = ['sec-formats','sec-why','sec-road','sec-earn','sec-results'];
 
 function revealUntilNextSection(startId){
   var start = document.getElementById(startId);
@@ -900,17 +836,15 @@ function initPromoBar(){
       bar.className='promo-bar ended';
       bar.innerHTML='<div class="pt">Спец-цена завершена</div><div class="timer">Время вышло</div><div class="ps">Напишите — подскажем по форматам</div>';
       clearInterval(promoTickTimer);
+      try{ localStorage.removeItem(PROMO_LS_KEY); }catch(e){}
+      resetDiscountDisplay();
       updateCta();
       renderTariffs(false);
       return;
     }
     var h=Math.floor(left/3600),m=Math.floor((left%3600)/60),s=left%60,pad=function(n){return(n<10?'0':'')+n;};
-    var title=PROMO_REAL
-      ? '🔥 Скидка −'+DISC+'% закреплена'
-      : '👀 Предпросмотр −'+DISC+'%';
-    var sub=PROMO_REAL
-      ? 'Цены ниже «было → стало» · таймер идёт'
-      : 'Так выглядят цены · закрепите кнопкой внизу';
+    var title='🔥 Скидка −'+DISC+'% · осталось';
+    var sub='vadjik.com/faster_discount';
     bar.innerHTML='<div class="pt">'+title+'</div><div class="timer">'+pad(h)+':'+pad(m)+':'+pad(s)+'</div><div class="ps">'+sub+'</div>';
     updateCta();
   }
@@ -933,7 +867,7 @@ if(isDiscountVisible()) renderTariffs(false);
   }
   var hint=document.getElementById('howmanyHint');
   if(hint && !HOWMANY){
-    hint.textContent='Калькулятор — кнопка «💸 Сколько можно заработать на Амазон» в меню бота.';
+    hint.textContent='Калькулятор — кнопка «💸 Посчитать мой доход» в меню бота.';
   }
 })();
 
