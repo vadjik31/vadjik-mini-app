@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530e -->
+<!-- app-build:20260530f -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -482,7 +482,6 @@ function initTelegramViewport(){
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
   applyTelegramInsets();
-  syncPromoState();
   setTimeout(function(){
     TG.expand();
     if (TG.requestFullscreen && isWideDesktop()) {
@@ -1056,6 +1055,7 @@ function initPromoBar(){
 }
 initPromoBar();
 if(isDiscountVisible()) renderTariffs(false);
+syncPromoState();
 
 (function(){
   var sec=document.getElementById('sec-earn');
