@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530i -->
+<!-- app-build:20260530j -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -357,6 +357,43 @@
     box-shadow:0 8px 32px rgba(0,0,0,.45);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;pointer-events:none}
   .app-toast.show{opacity:1;transform:translateY(0)}
 
+  /* рассрочка 2 мес */
+  .split-banner{margin:0 0 16px;padding:18px 16px;border-radius:20px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(96,165,250,.05));
+    border:1.5px solid rgba(34,211,238,.35);box-shadow:0 0 32px rgba(34,211,238,.08)}
+  .split-banner .sb-row{display:flex;gap:14px;align-items:flex-start}
+  .split-banner .sb-ico{flex:0 0 44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:22px;background:rgba(34,211,238,.15);box-shadow:0 0 20px rgba(34,211,238,.25)}
+  .split-banner .sb-body{flex:1;min-width:0}
+  .split-banner .sb-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+    padding:4px 10px;border-radius:8px;background:rgba(34,211,238,.18);color:#67e8f9;border:1px solid rgba(34,211,238,.35)}
+  .split-banner .sb-tag{font-size:12.5px;color:var(--mut);margin-left:4px}
+  .split-banner .sb-title{font-family:var(--disp);font-size:17px;font-weight:800;line-height:1.25;margin:8px 0 6px}
+  .split-banner .sb-title em{font-style:normal;color:var(--cyan)}
+  .split-banner .sb-desc{font-size:14px;color:#dbe0e8;line-height:1.45}
+  .split-banner .sb-toggle{display:inline;margin-top:6px;background:none;border:none;padding:0;
+    color:var(--cyan);font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;font-family:var(--body)}
+  .split-banner .sb-steps{flex:0 0 auto;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);font-weight:700}
+  .split-banner .sb-steps span{padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+  .split-banner .sb-expand{margin-top:14px;padding-top:14px;border-top:1px solid rgba(34,211,238,.2)}
+  .split-banner .sb-expand-note{font-size:13px;color:var(--mut);margin-bottom:12px;line-height:1.45}
+  .split-banner .sb-contact{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-radius:14px;
+    background:rgba(0,0,0,.35);border:1px solid rgba(34,211,238,.35);cursor:pointer;text-align:left;color:inherit;
+    font-family:var(--body)}
+  .split-banner .sb-contact:active{background:rgba(34,211,238,.1)}
+  .split-banner .sb-contact .ico{font-size:22px;flex:0 0 28px}
+  .split-banner .sb-contact b{display:block;font-size:14.5px;font-weight:700;color:#e8f4ff;margin-bottom:2px}
+  .split-banner .sb-contact span{font-size:12.5px;color:var(--mut)}
+  .split-banner .sb-contact .arr{margin-left:auto;color:var(--cyan);font-size:18px}
+  .split-card{margin:12px 0 14px;padding:14px 15px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(34,211,238,.07),rgba(96,165,250,.04));
+    border:1px solid rgba(34,211,238,.28)}
+  .split-card-lbl{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+  .split-card-amt{font-family:var(--disp);font-size:28px;font-weight:800;color:var(--cyan);letter-spacing:-1px;line-height:1}
+  .split-card-amt span{font-family:var(--body);font-size:13px;font-weight:600;color:var(--mut);margin-left:6px;letter-spacing:0}
+  .split-card-tot{font-size:13px;color:#a5b4c8;margin-top:6px}
+  .split-card-note{font-size:12px;color:var(--mut);margin-top:4px}
+
   @media(min-width:768px){
     .wrap,.cta-bar .inner{max-width:920px}
     .hero h1{font-size:38px}
@@ -396,6 +433,7 @@
   <!-- 1. ЦЕНЫ СРАЗУ — человек за этим и пришёл -->
   <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Форматы и цены</h2></div>
   <p class="hint reveal" style="margin-top:-8px">Сначала смотрите, что входит — потом откройте цену. Инструменты (~$2000) в любом пакете бесплатно, можно платить частями</p>
+  <div id="splitPayBanner" class="split-banner reveal" style="display:none"></div>
   <div id="tariffs"></div>
   <div class="tg-desktop-spacer" aria-hidden="true"></div>
 
@@ -672,6 +710,72 @@ async function loadAppData(){
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 function savings(p){ return p - discPrice(p); }
 
+var SPLIT_MONTHS = 2;
+var splitBannerOpen = false;
+
+function effectiveTariffPrice(t){
+  return isDiscountVisible() ? discPrice(t.price) : t.price;
+}
+function splitMonthlyAmount(t){
+  return Math.round(effectiveTariffPrice(t) / SPLIT_MONTHS);
+}
+function contactHandle(){
+  var c = (CONTACT || '').replace(/^https?:\/\//,'').replace(/^t\.me\//i,'');
+  return c ? '@' + c : '@vadjik';
+}
+function tariffSplitHtml(t){
+  if(!isDiscountVisible()) return '';
+  var per = splitMonthlyAmount(t);
+  var total = effectiveTariffPrice(t);
+  return '<div class="split-card">' +
+    '<div class="split-card-lbl">Удобная оплата · ' + t.name + '</div>' +
+    '<div class="split-card-amt">$' + per.toLocaleString() +
+      '<span>× ' + SPLIT_MONTHS + ' мес</span></div>' +
+    '<div class="split-card-tot">со скидкой итого $' + total.toLocaleString() + '</div>' +
+    '<div class="split-card-note">Равные части · без переплат и процентов</div>' +
+  '</div>';
+}
+function toggleSplitBanner(){
+  splitBannerOpen = !splitBannerOpen;
+  renderSplitBanner();
+}
+function renderSplitBanner(){
+  var el = $('splitPayBanner');
+  if(!el) return;
+  if(!isDiscountVisible()){
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = '';
+  var toggleLbl = splitBannerOpen ? 'Свернуть' : 'Посмотреть суммы по месяцам';
+  var expand = splitBannerOpen
+    ? '<div class="sb-expand">' +
+        '<p class="sb-expand-note">Разбивка по каждому формату — прямо в его карточке ниже. ' +
+        'Цифры уже с учётом вашей скидки −' + DISC + '%.</p>' +
+        '<button type="button" class="sb-contact" onclick="openContact()">' +
+          '<span class="ico">💬</span>' +
+          '<span><b>Оплата по месяцам — напишите ' + contactHandle() + '</b>' +
+          '<span>подберём удобный график</span></span>' +
+          '<span class="arr">→</span>' +
+        '</button></div>'
+    : '';
+  el.innerHTML =
+    '<div class="sb-row">' +
+      '<div class="sb-ico">📅</div>' +
+      '<div class="sb-body">' +
+        '<span class="sb-badge">Удобная оплата</span>' +
+        '<span class="sb-tag">— нет суммы целиком? не проблема</span>' +
+        '<div class="sb-title">Любой тариф можно разбить <em>на 2 месяца</em></div>' +
+        '<p class="sb-desc">Платите <b>равными частями</b> — без переплат и процентов. ' +
+          '<button type="button" class="sb-toggle" onclick="toggleSplitBanner()">' + toggleLbl + '</button></p>' +
+        expand +
+      '</div>' +
+      '<div class="sb-steps"><span>1</span>→<span>2</span></div>' +
+    '</div>';
+  el.classList.add('in');
+}
+
 function showToast(msg){
   var t=$('appToast'); if(!t)return;
   t.textContent=msg; t.classList.add('show');
@@ -792,6 +896,7 @@ function renderTariffs(flash){
   var el = $('tariffs');
   if(!el) return;
   var on=isDiscountVisible();
+  renderSplitBanner();
   el.innerHTML = TARIFFS.map(function(t,i){
     var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
     var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
@@ -829,11 +934,13 @@ function renderTariffs(flash){
     var moreBtn=revealed?'<button type="button" class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button>':'';
 
     var flowLine = (t.id === 'flow') ? flowStartHtml() : '';
+    var splitLine = (on && revealed) ? tariffSplitHtml(t) : '';
 
     return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+
            '<div class="t-name">'+t.name+'</div>'+flowLine+'<div class="t-sub">'+t.sub+'</div>'+
            valueList+
            priceBlock+
+           splitLine+
            '<div class="t-result">'+t.result+'</div>'+
            '<ul class="t-feats">'+feats+'</ul>'+
            mainBtn+moreBtn+'</div>';
@@ -897,6 +1004,7 @@ function openSheet(i){
             '<span class="t-disc">−'+DISC+'%</span></div>'+
             '<div class="spb-save">💰 Ваша экономия: $'+savings(t.price).toLocaleString()+'</div>'+
           '</div>'+
+          tariffSplitHtml(t)+
           '<button type="button" class="t-btn btn-fire sheet-pay" onclick="openDiscountSite();closeSheet()">🛒 На сайт — выбрать формат (−'+DISC+'%)</button>'+
           '<div class="sheet-detail-sub">Скидка действует ограниченное время</div>';
   } else if(alreadyRevealed){
