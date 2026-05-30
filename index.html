@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530k -->
+<!-- app-build:20260530l -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -624,7 +624,14 @@ function loadPromoLocal(){
     var saved = JSON.parse(localStorage.getItem(PROMO_LS_KEY) || 'null');
     if(!saved || saved.deadline <= nowSec() || saved.disc <= 0 || !saved.sig || !saved.uid) return false;
     var tu = tgUid();
-    if(tu && String(saved.uid) !== tu) return false;
+    var urlUid = params.get('uid') || '';
+    if(tu){
+      if(String(saved.uid) !== tu) return false;
+    } else if(urlUid){
+      if(String(saved.uid) !== String(urlUid)) return false;
+    } else {
+      return false;
+    }
     setPromoActive(saved.deadline, saved.disc, saved.sig, saved.uid, saved.discount);
     return true;
   } catch(e) { return false; }
@@ -974,6 +981,7 @@ function bootApp(){
     initPromoBar();
     document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
     loadAppData();
+    notifyWebappOpenOnce();
   } catch(e) {
     var t=$('tariffs');
     if(t && !t.innerHTML) t.innerHTML='<p class="hint" style="padding:16px">Не удалось загрузить. Закройте и откройте аппку снова.</p>';
@@ -1076,14 +1084,39 @@ function tgLink(url){
 function openContact(){ tgLink(CONTACT); }
 
 function claimPromoInBot(){
-  if(TG && TG.sendData){
-    if(TG.HapticFeedback){
-      try { TG.HapticFeedback.notificationOccurred('success'); } catch(e) {}
-    }
-    TG.sendData('claim_promo');
+  var deep = botDeepLink('claim_promo');
+  if(!TG){
+    tgLink(deep);
     return;
   }
-  tgLink(botDeepLink('claim_promo'));
+  if(TG.HapticFeedback){
+    try { TG.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+  }
+  var sent = false;
+  try {
+    if(typeof TG.sendData === 'function'){
+      TG.sendData('claim_promo');
+      sent = true;
+      setTimeout(function(){
+        if(document.visibilityState === 'visible'){
+          tgLink(deep);
+        }
+      }, 1400);
+    }
+  } catch(e) {}
+  if(!sent) tgLink(deep);
+}
+
+function notifyWebappOpenOnce(){
+  if(params.get('wa') !== '1') return;
+  try {
+    if(sessionStorage.getItem('wa_open_ping')) return;
+    sessionStorage.setItem('wa_open_ping', '1');
+  } catch(e) { return; }
+  var deep = botDeepLink('wa_open');
+  if(TG && TG.openTelegramLink && isWideDesktop()){
+    setTimeout(function(){ try { TG.openTelegramLink(deep); } catch(e) {} }, 2000);
+  }
 }
 
 function book(){
