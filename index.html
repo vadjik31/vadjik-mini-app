@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530j -->
+<!-- app-build:20260530k -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +19,12 @@
     --tg-safe-bottom:0px; --tg-desktop-chrome:0px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  /* надёжные тапы на телефоне (Telegram WebView / iOS) */
+  button,.t-btn,.t-more,.t-pay,.cta-main,.cta-ask,.earn-btn,.sb-contact,.sb-toggle,
+  .app-nav a,.t-reveal,.res-imgwrap,.viewer .x{
+    touch-action:manipulation;-webkit-user-select:none;user-select:none;cursor:pointer}
+  button,.t-btn,.cta-main,.cta-ask,.earn-btn,.t-more,.t-pay{min-height:48px;position:relative;z-index:1}
+  button>*,.t-btn>*,.cta-main>*,.earn-btn>*{pointer-events:none}
   html,body{background:var(--bg);color:var(--txt);font-family:var(--body);font-size:16px;line-height:1.6;
     overscroll-behavior-y:none;-webkit-font-smoothing:antialiased}
   body{padding-bottom:calc(36px + var(--tg-safe-bottom) + var(--tg-desktop-chrome));position:relative}
@@ -254,11 +260,16 @@
   .t-feats li.no .ic{color:#5a5f6b}
   .btn-fire{position:relative;overflow:hidden;border:none;cursor:pointer;font-family:var(--disp);font-weight:800;color:#1a0a00;
     background:linear-gradient(95deg,#ff6b35,#f5c451 45%,#ff3d00);box-shadow:0 0 0 2px rgba(255,120,40,.4),0 12px 36px rgba(255,90,20,.45);
-    animation:firePulse 1.8s ease-in-out infinite}
-  .btn-fire::before{content:'';position:absolute;top:0;left:-55%;width:42%;height:100%;
+    animation:firePulse 1.8s ease-in-out infinite;isolation:isolate}
+  .btn-fire::before{content:'';position:absolute;top:0;left:-55%;width:42%;height:100%;pointer-events:none;z-index:0;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:shine 2.2s infinite}
   .btn-fire:active{transform:scale(.97)}
   @keyframes firePulse{0%,100%{box-shadow:0 0 0 2px rgba(255,120,40,.35),0 10px 32px rgba(255,90,20,.4)}50%{box-shadow:0 0 0 3px rgba(255,200,80,.55),0 16px 44px rgba(255,60,0,.55);transform:scale(1.02)}}
+  @keyframes firePulseTouch{0%,100%{box-shadow:0 0 0 2px rgba(255,120,40,.35),0 10px 32px rgba(255,90,20,.4)}50%{box-shadow:0 0 0 3px rgba(255,200,80,.55),0 16px 44px rgba(255,60,0,.55)}}
+  @media (hover:none) and (pointer:coarse){
+    .btn-fire{animation:firePulseTouch 1.8s ease-in-out infinite}
+    .t-pay{animation:payPulseTouch 2.2s ease-in-out infinite}
+  }
   .t-btn{width:100%;border-radius:14px;padding:16px;font-size:16px;margin-top:4px}
   .t-btn.btn-fire{font-size:15px;line-height:1.25}
   .t-pay{width:100%;border:none;border-radius:14px;padding:17px 18px;margin-top:14px;font-family:var(--disp);font-size:17px;font-weight:800;cursor:pointer;color:#06281c;
@@ -268,6 +279,7 @@
   .t-pay:active{transform:scale(.98)}
   .sheet-pay{margin-top:20px;font-size:17px}
   @keyframes payPulse{0%,100%{box-shadow:0 0 0 2px rgba(16,217,138,.45),0 10px 28px rgba(16,217,138,.35)}50%{box-shadow:0 0 0 3px rgba(34,211,238,.65),0 16px 40px rgba(16,217,138,.55);transform:scale(1.01)}}
+  @keyframes payPulseTouch{0%,100%{box-shadow:0 0 0 2px rgba(16,217,138,.45),0 10px 28px rgba(16,217,138,.35)}50%{box-shadow:0 0 0 3px rgba(34,211,238,.65),0 16px 40px rgba(16,217,138,.55)}}
   .t-more{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(34,211,238,.35);color:#e8f4ff;border-radius:14px;padding:13px;font-size:14px;margin-top:10px;cursor:pointer;font-weight:700}
   .t-more:active{background:rgba(34,211,238,.12)}
   .sheet-detail{width:100%;margin-top:18px;border-radius:16px;padding:17px;font-size:16px;
@@ -929,7 +941,7 @@ function renderTariffs(flash){
     }
 
     var btnClass = (revealed && (on || !FUNNEL_LOCKED)) ? 't-btn btn-fire' : 't-btn';
-    var mainBtn='<button class="'+btnClass+'" onclick="'+primaryAction+'">'+btnLabel+'</button>';
+    var mainBtn='<button type="button" class="'+btnClass+'" onclick="'+primaryAction+'">'+btnLabel+'</button>';
     var flashCls=(flash&&on)?' price-flash':'';
     var moreBtn=revealed?'<button type="button" class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button>':'';
 
@@ -1189,6 +1201,40 @@ function initPromoBar(){
 }
 
 bootApp();
+
+(function initReliableTouch(){
+  var touchStart = null;
+  var TAP_MAX_MS = 450;
+  var TAP_MAX_MOVE = 14;
+  function tapTarget(el){
+    return el && el.closest && el.closest(
+      'button,.res-imgwrap,.sb-contact,.app-nav a[href^="#"],.viewer .x'
+    );
+  }
+  document.addEventListener('touchstart', function(e){
+    var t = tapTarget(e.target);
+    if(!t) { touchStart = null; return; }
+    var touch = e.touches && e.touches[0];
+    if(!touch) return;
+    touchStart = {el:t, x:touch.clientX, y:touch.clientY, t:Date.now()};
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(!touchStart) return;
+    var t = touchStart.el;
+    if(!t || !document.contains(t)) { touchStart = null; return; }
+    var touch = e.changedTouches && e.changedTouches[0];
+    if(!touch) { touchStart = null; return; }
+    var dt = Date.now() - touchStart.t;
+    var dx = Math.abs(touch.clientX - touchStart.x);
+    var dy = Math.abs(touch.clientY - touchStart.y);
+    touchStart = null;
+    if(dt > TAP_MAX_MS || dx > TAP_MAX_MOVE || dy > TAP_MAX_MOVE) return;
+    if(!tapTarget(e.target) && !t.contains(e.target)) return;
+    e.preventDefault();
+    t.click();
+    try { TG && TG.HapticFeedback && TG.HapticFeedback.impactOccurred('light'); } catch(x){}
+  }, {passive:false});
+})();
 
 (function(){
   var sec=document.getElementById('sec-earn');
