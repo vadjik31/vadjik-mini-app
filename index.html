@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530b -->
+<!-- app-build:20260530d-api-3state -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -199,6 +199,54 @@
   .t-old{font-size:22px;color:var(--mut);text-decoration:line-through;font-weight:600;letter-spacing:0}
   .t-new{color:var(--emerald)}
   .t-disc{font-family:var(--body);font-size:14px;font-weight:800;color:#06281c;background:linear-gradient(90deg,#10d98a,#22d3ee);padding:4px 10px;border-radius:8px;vertical-align:middle;letter-spacing:0}
+  /* ценность до цены */
+  .t-value{list-style:none;margin:0 0 14px;padding:0}
+  .t-value li{position:relative;padding:5px 0 5px 24px;font-size:14.5px;color:#dbe0e8;line-height:1.45}
+  .t-value li::before{content:'✓';position:absolute;left:0;top:5px;color:var(--emerald);font-weight:800}
+  /* якорь «полная ценность» */
+  .t-anchor{font-size:14px;color:var(--mut);margin-bottom:8px}
+  .t-anchor b{color:#cbd2dd;font-weight:700;font-size:17px;font-family:var(--disp)}
+  .t-anchor.strike{font-size:15px}
+  .t-anchor.strike{text-decoration:line-through;opacity:.55}
+  .t-anchor.strike b{text-decoration:line-through}
+  /* кнопка «показать цену» */
+  .t-reveal{width:100%;margin:4px 0 16px;padding:14px;border-radius:14px;cursor:pointer;
+    font-family:var(--disp);font-weight:800;font-size:16px;color:var(--txt);
+    background:rgba(255,255,255,.06);border:1.5px solid var(--line);transition:.18s;
+    display:flex;align-items:center;justify-content:center;gap:8px}
+  .t-reveal:hover{background:rgba(255,255,255,.1);border-color:rgba(16,217,138,.4)}
+  .t-reveal:active{transform:scale(.98)}
+  .t-locked{font-size:13px;color:var(--mut);margin-bottom:14px;padding:9px 12px;
+    background:rgba(255,255,255,.03);border:1px dashed var(--line);border-radius:11px;line-height:1.4}
+  .t-hint-bonus{font-size:13px;color:var(--gold);margin-top:8px;font-weight:600}
+  .t-save{font-size:14px;color:#86efac;font-weight:700;margin:8px 0 0;padding:9px 13px;
+    background:rgba(16,217,138,.1);border:1px solid rgba(16,217,138,.3);border-radius:11px}
+  /* шит: якорь и блок цены */
+  .sheet-anchor{font-size:14px;color:var(--mut);margin:2px 0 14px;padding:10px 13px;
+    background:rgba(245,196,81,.08);border:1px solid rgba(245,196,81,.25);border-radius:11px}
+  .sheet-anchor b{color:var(--gold);font-family:var(--disp);font-size:16px}
+  .sheet-reveal-cta{margin:18px 0 6px;padding:18px;text-align:center;
+    background:linear-gradient(135deg,rgba(16,217,138,.08),rgba(34,211,238,.05));
+    border:1.5px solid rgba(16,217,138,.3);border-radius:18px}
+  .sheet-reveal-cta .src-q{font-family:var(--disp);font-weight:800;font-size:18px;margin-bottom:6px}
+  .sheet-reveal-cta .src-a{font-size:14px;color:var(--mut);margin-bottom:14px}
+  .sheet-reveal-cta .src-a b{color:var(--gold)}
+  .sheet-reveal-cta .t-btn{width:100%}
+  .sheet-price-box{margin:18px 0 12px;padding:16px;border-radius:16px;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);text-align:center}
+  .spb-anchor{font-size:14px;color:var(--mut);margin-bottom:4px}
+  .spb-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-family:var(--disp)}
+  .spb-old{font-size:20px;color:var(--mut);text-decoration:line-through;font-weight:600}
+  .spb-new{font-size:34px;font-weight:800;color:var(--emerald);letter-spacing:-1px}
+  .spb-plain{font-size:34px;font-weight:800;letter-spacing:-1px}
+  .spb-lbl{font-size:14px;color:var(--mut);font-family:var(--body)}
+  .spb-save{margin-top:8px;font-size:14px;color:#86efac;font-weight:700}
+  .spb-bonus{margin-top:10px;font-size:14px;color:var(--gold);font-weight:700}
+  /* строка даты потока */
+  .flow-date-line{margin:14px 0 4px;padding:12px 15px;border-radius:14px;font-size:14.5px;
+    background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(167,139,250,.07));
+    border:1px solid rgba(96,165,250,.3);color:#cdd9ee;line-height:1.45}
+  .flow-date-line b{color:#bcd3f5}
   .t-result{font-size:14px;color:#dbe0e8;margin:9px 0 17px;padding:11px 14px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--line)}
   .t-feats{list-style:none;margin-bottom:17px}
   .t-feats li{display:flex;gap:10px;align-items:flex-start;font-size:15px;padding:5px 0}
@@ -348,7 +396,8 @@
 
   <!-- 1. ЦЕНЫ СРАЗУ — человек за этим и пришёл -->
   <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Форматы и цены</h2></div>
-  <p class="hint reveal" style="margin-top:-8px">Можно платить частями · инструменты (~$2000) входят бесплатно в любой пакет</p>
+  <p class="hint reveal" style="margin-top:-8px">Сначала смотрите, что входит — потом откройте цену. Инструменты (~$2000) в любом пакете бесплатно, можно платить частями</p>
+  <div class="flow-date-line reveal" id="flowDateLine" style="display:none"></div>
   <div id="tariffs"></div>
   <div class="tg-desktop-spacer" aria-hidden="true"></div>
 
@@ -457,7 +506,6 @@ const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const RESULTS = params.get('results') || 'https://vadjik.com/results';
 const HOWMANY = params.get('howmany') || '';
-const PROMO_HOURS = parseInt(params.get('hours') || '24', 10) || 24;
 
 // Скидка — ТОЛЬКО после «Нажми чтобы узнать спец. цены» (бот выдаёт sig + deadline).
 const DEFAULT_DISC = 20;
@@ -539,6 +587,64 @@ function applyPromoFromUrl(){
 }
 applyPromoFromUrl();
 
+// ── Публичный API vadjik.com: актуальные цены + дата старта потока ──
+// Если сервер недоступен — тихо остаёмся на локальных ценах из TARIFFS.
+var API_URL = 'https://vadjik.com/api/public/app-data';
+var API_KEY = params.get('apikey') || 'vadjik_api_2cQ5gPnlBXo7iMAC7UofpurS4fa8uBVM';
+// slug в API → id тарифа в аппке
+var API_SLUG_MAP = { base:'base', flow:'flow', advanced:'advanced', pro:'pro' };
+var FLOW_DATE = null, FLOW_TIME = null, API_DISCOUNTS = null, SERVER_SKEW = 0;
+
+function fmtFlowDate(iso){
+  if(!iso) return null;
+  var p = iso.split('-'); if(p.length!==3) return iso;
+  var months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  var d = parseInt(p[2],10), m = parseInt(p[1],10)-1;
+  return d + ' ' + (months[m]||'') ;
+}
+
+async function loadAppData(){
+  try {
+    var r = await fetch(API_URL, { headers: { 'X-API-Key': API_KEY } });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var data = await r.json();
+    // 1) цены — перезаписываем base у тарифов
+    if(data.prices){
+      TARIFFS.forEach(function(t){
+        var apiKey = API_SLUG_MAP[t.id];
+        if(apiKey && data.prices[apiKey] && typeof data.prices[apiKey].price === 'number'){
+          t.price = data.prices[apiKey].price;
+        }
+      });
+    }
+    // 2) дата/время старта потока
+    if(data.flow_date){ FLOW_DATE = data.flow_date; FLOW_TIME = data.flow_time || '19:00'; }
+    // 3) per-tier скидки (на будущее — пока показываем по серверному промо)
+    if(data.discounts){ API_DISCOUNTS = data.discounts; }
+    // 4) синхронизация времени сервера
+    if(data.server_now && data.server_now.unix){
+      SERVER_SKEW = data.server_now.unix - Math.floor(Date.now()/1000);
+    }
+    renderTariffs(false);
+    renderFlowDate();
+  } catch(e){
+    // молча: локальные цены уже стоят
+  }
+}
+
+function renderFlowDate(){
+  var el = document.getElementById('flowDateLine');
+  if(!el) return;
+  if(FLOW_DATE){
+    el.style.display = '';
+    el.innerHTML = '📅 Ближайший «Поток» стартует <b>' + fmtFlowDate(FLOW_DATE) +
+      (FLOW_TIME ? ' в ' + FLOW_TIME : '') + '</b> — место можно занять заранее';
+  } else {
+    el.style.display = 'none';
+  }
+}
+loadAppData();
+
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 function savings(p){ return p - discPrice(p); }
 
@@ -619,27 +725,34 @@ const STUDENTS = [
 {name:"Андрей",loc:"Ирландия",mkt:"Amazon США",res:"$9,516",lbl:"продажи",img:"andrey2-result.png",c:"orange"}
 ];
 const TARIFFS = [
-{id:"base",cls:"base",name:"Обучаюсь сам",sub:"Самостоятельный старт",price:750,slug:"myself",result:"Понимаете процесс и стартуете в своём темпе",
+{id:"base",cls:"base",name:"Обучаюсь сам",sub:"Самостоятельный старт",price:750,slug:"myself",anchor:2600,result:"Понимаете процесс и стартуете в своём темпе",
+ valuein:["75 видео-уроков (от регистрации до продаж)","Инструменты-помощники (~$2000)","Записи 9 онлайн-встреч","Доступ навсегда"],
  feats:[["Все 75 видео-уроков",1],["Инструменты-помощники",1],["Доступ навсегда",1],["Записи 9 онлайн-встреч",1],["Личные созвоны с Вадимом",0]],
  detail:{intro:"Вы получаете доступ к урокам и материалам и проходите всё в своём темпе.",
   blocks:[{h:"Видео-курс",p:"75 уроков с заданиями — от регистрации до первых продаж."},{h:"Проверка товара",free:1,p:"Инструмент, который подсказывает, можно ли продавать конкретный товар. Доступ навсегда."},{h:"Записи 9 онлайн-встреч",p:"Полные записи групповых занятий прошлых групп — все шаги разобраны."},{h:"Поддержка в чате — 1 месяц",p:"Вопрос по Amazon — пишете в чат, отвечаем. Личных созвонов в этом формате нет."}],
   summary:["75 видео-уроков","Все бонусы-инструменты ($1839)","Записи 9 онлайн-встреч","1 месяц поддержки"]}},
-{id:"flow",cls:"flow",name:"Поток",sub:"Обучение в группе",price:1100,slug:"potok",result:"Доходите до первых продаж вместе с группой",
+{id:"flow",cls:"flow",name:"Поток",sub:"Обучение в группе",price:1100,slug:"potok",anchor:3400,result:"Доходите до первых продаж вместе с группой",
+ valuein:["Всё из «Обучаюсь сам»","9 онлайн-встреч в группе","2 личных разбора со мной","1 проверенный поставщик","Поддержка до первых продаж"],
  feats:[["Все 75 видео-уроков",1],["9 онлайн-встреч в группе",1],["2 личных созвона",1],["1 проверенный поставщик",1],["Поддержка в чате",1]],
  detail:{intro:"За месяц проходите систему вместе с группой и с нами — вместо месяцев проб в одиночку.",
   blocks:[{h:"Видео-курс",p:"75 уроков + задания, доступ сразу."},{h:"9 онлайн-встреч в группе",ul:["Раз в неделю по расписанию","Можно задавать любые вопросы вживую","Все встречи записываются","Время подбирается под группу"]},{h:"Что разбираем",ul:["Регистрация компании и аккаунта","Где искать поставщиков","Как выбирать товары и считать прибыль","Отправка товара на склад Amazon","Как наращивать обороты"]},{h:"1 проверенный поставщик",p:"Поставщик, у которого можно сразу закупиться — не вслепую."}],
   summary:["Видео-курс (75 уроков)","Инструменты (~$2000)","9 онлайн-встреч","2 личных разбора","Поддержка после","Ведём до первых продаж"]}},
-{id:"advanced",cls:"popular",name:"Продвинутый",sub:"С личным наставничеством",price:1700,slug:"advanced",result:"Стабильные продажи и выстроенная система",badge:"ПОПУЛЯРНЫЙ",badgeCls:"pop",
+{id:"advanced",cls:"popular",name:"Продвинутый",sub:"С личным наставничеством",price:1700,slug:"advanced",anchor:5200,result:"Стабильные продажи и выстроенная система",badge:"ПОПУЛЯРНЫЙ",badgeCls:"pop",
+ valuein:["Всё из «Потока»","4 личных разбора по 1.5 часа","3 поставщика для старта","Выбор рынка: США или Европа","4 месяца поддержки"],
  feats:[["Всё из «Обучаюсь сам»",1],["4 личных созвона по 1.5ч",1],["3 поставщика для старта",1],["Выбор рынка: США или Европа",1],["4 месяца поддержки",1]],
  detail:{intro:"Всё из самостоятельного формата + личная работа с нами и готовые поставщики.",
   blocks:[{h:"3 поставщика для старта",p:"3 оптовика, которые одобрят ваш аккаунт. Можно закупиться от $4,000 и заработать сверху около 20%."},{h:"4 личных созвона по 1.5 часа",p:"Разбираем лично ваш кабинет и вашу ситуацию — отвечаем на всё здесь и сейчас."},{h:"4 месяца поддержки",p:"Любой вопрос по Amazon — пишете нам, отвечаем."},{h:"Также входит",ul:["9 записей групповых встреч","Старт сразу, без ожидания группы","Все 75 видео-уроков","Выбор рынка: США или Европа"]}],
   summary:["Всё из базового формата","4 личных разбора","3 поставщика","Выбор рынка США/ЕС","4 месяца поддержки","Инструменты (~$2000)"]}},
-{id:"pro",cls:"vip",name:"Под ключ",sub:"Максимальный формат",price:4200,slug:"vip",result:"Бизнес под ключ, цель — $15 000+ продаж в месяц",badge:"ПОД КЛЮЧ",badgeCls:"vip",
+{id:"pro",cls:"vip",name:"Под ключ",sub:"Максимальный формат",price:4200,slug:"vip",anchor:9000,result:"Бизнес под ключ, цель — $15 000+ продаж в месяц",badge:"ПОД КЛЮЧ",badgeCls:"vip",
+ valuein:["Всё из «Продвинутого»","12 личных созвонов","10 поставщиков + 50 товаров","Сайт + система учёта ($3000+)","6 месяцев поддержки"],
  feats:[["Всё из «Продвинутого»",1],["12 личных созвонов",1],["10 поставщиков + 50 товаров",1],["Сайт + система учёта",1],["6 месяцев поддержки",1]],
  detail:{intro:"Максимальное сопровождение. Большую часть делаем вместе с вами, цель — выйти на $15 000+ продаж в месяц.",
   blocks:[{h:"Масштаб сопровождения",ul:["12 личных созвонов с нами","10 поставщиков + помощь с выбором 50 товаров","6 месяцев плотной поддержки"]},{h:"Под ключ — подарок на $3,000+",free:1,ul:["Личный сайт для привлечения клиентов (обычно от $1,500)","Система учёта под вас (обычно от $1,500)"]},{h:"Цель",p:"$15 000+ продаж в месяц. Это оборот (сумма всех продаж), не чистая прибыль. Бизнес выстраиваем вместе, под ключ."}],
   summary:["Всё из «Продвинутого»","12 личных созвонов","10 поставщиков + 50 товаров","Сайт + система учёта ($3,000+)","6 месяцев поддержки","Цель — $15 000+/мес"]}}
 ];
+
+// Состояние «цена раскрыта» по клику — только клиентское, не трогает серверную скидку
+var REVEALED = {};
 
 var $=function(id){return document.getElementById(id);};
 
@@ -660,13 +773,46 @@ function renderTariffs(flash){
   $('tariffs').innerHTML = TARIFFS.map(function(t,i){
     var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
     var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
-    var priceHtml=on
-      ?'<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div><div class="t-result" style="background:rgba(16,217,138,.1);border-color:rgba(16,217,138,.3);color:#86efac;font-weight:700">💰 Экономия: $'+savings(t.price).toLocaleString()+'</div>'
-      :'<div class="t-price">$'+t.price.toLocaleString()+' <small>USD</small></div>';
-    var btnLabel=FUNNEL_LOCKED?'Смотреть цены':(!on?'🔥 Нажми чтобы узнать специальные цены':'🛒 На сайт со скидкой −'+DISC+'%');
-    var btnCls='t-btn btn-fire';
+    var revealed=on||REVEALED[i]; // скидка активна ИЛИ человек нажал «показать цену»
+
+    // что входит — короткий список ценности (виден всегда, до цены)
+    var valueList=t.valuein?'<ul class="t-value">'+t.valuein.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>':'';
+
+    var priceBlock, btnLabel, primaryAction;
+    if(!revealed){
+      // СОСТОЯНИЕ 1 — цена скрыта. Чтобы увидеть цену, надо изучить ценность внутри.
+      priceBlock='<div class="t-anchor">Полная ценность <b>~$'+t.anchor.toLocaleString()+'</b></div>'+
+                 '<div class="t-locked">🔒 Цена откроется после того, как посмотрите, что входит</div>';
+      btnLabel='👀 Что входит — и узнать цену';
+      primaryAction='openSheet('+i+')';
+    } else if(on){
+      // СОСТОЯНИЕ 3 — серверная скидка −20% (как раньше, не трогаем)
+      priceBlock='<div class="t-anchor strike">~$'+t.anchor.toLocaleString()+'</div>'+
+                 '<div class="t-price"><span class="t-old">$'+t.price.toLocaleString()+'</span> <span class="t-new">$'+discPrice(t.price).toLocaleString()+'</span> <span class="t-disc">−'+DISC+'%</span></div>'+
+                 '<div class="t-save">💰 Экономия: $'+savings(t.price).toLocaleString()+'</div>';
+      btnLabel=FUNNEL_LOCKED?'Смотреть цены':'🛒 На сайт со скидкой −'+DISC+'%';
+      primaryAction='book()';
+    } else {
+      // СОСТОЯНИЕ 2 — цена раскрыта (человек изучил ценность), обычная цена
+      priceBlock='<div class="t-anchor strike">~$'+t.anchor.toLocaleString()+'</div>'+
+                 '<div class="t-price">$'+t.price.toLocaleString()+' <small>обычная цена</small></div>'+
+                 '<div class="t-hint-bonus">🎁 Сегодня доступен бонус −20% — закрепить можно ниже</div>';
+      btnLabel='🎁 Закрепить мою скидку −20%';
+      primaryAction='book()';
+    }
+
+    var btnClass = (revealed && (on || !FUNNEL_LOCKED)) ? 't-btn btn-fire' : 't-btn';
+    var mainBtn='<button class="'+btnClass+'" onclick="'+primaryAction+'">'+btnLabel+'</button>';
     var flashCls=(flash&&on)?' price-flash':'';
-    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+'<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+priceHtml+'<div class="t-result">'+t.result+'</div><ul class="t-feats">'+feats+'</ul><button class="'+btnCls+'" onclick="book()">'+btnLabel+'</button><button type="button" class="t-more" onclick="openSheet('+i+')">Узнать подробно →</button></div>';
+    var moreBtn=revealed?'<button type="button" class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button>':'';
+
+    return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+
+           '<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+
+           valueList+
+           priceBlock+
+           '<div class="t-result">'+t.result+'</div>'+
+           '<ul class="t-feats">'+feats+'</ul>'+
+           mainBtn+moreBtn+'</div>';
   }).join('');
 }
 renderTariffs(false);
@@ -681,17 +827,57 @@ function openDiscountSite(){
 
 function openSheet(i){
   var t=TARIFFS[i],d=t.detail;
-  var priceStr=isDiscountVisible()?'$'+discPrice(t.price).toLocaleString()+' (−'+DISC+'%, было $'+t.price.toLocaleString()+')':'$'+t.price.toLocaleString();
-  var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3><div class="ssub">'+t.sub+' · '+priceStr+'</div><div class="intro">'+d.intro+'</div>';
-  d.blocks.forEach(function(b){html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';if(b.p)html+='<p>'+b.p+'</p>';if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';html+='</div>';});
+  var on=isDiscountVisible();
+  var alreadyRevealed = on || REVEALED[i];
+
+  var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3>'+
+           '<div class="ssub">'+t.sub+'</div>'+
+           '<div class="sheet-anchor">Если собирать всё это по отдельности — около <b>$'+t.anchor.toLocaleString()+'</b></div>'+
+           '<div class="intro">'+d.intro+'</div>';
+
+  d.blocks.forEach(function(b){
+    html+='<div class="blk"><h4>'+b.h+(b.free?' <span class="free">БЕСПЛАТНО</span>':'')+'</h4>';
+    if(b.p)html+='<p>'+b.p+'</p>';
+    if(b.ul)html+='<ul>'+b.ul.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+    html+='</div>';
+  });
   html+='<div class="sum"><h4>Итог: что получаете</h4><ul>'+d.summary.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
-  if(isDiscountVisible()){
-    html+='<button type="button" class="t-btn btn-fire sheet-pay" onclick="openDiscountSite();closeSheet()">🛒 На сайт — выбрать формат (−'+DISC+'%)</button>';
+
+  // ── НИЗ ШИТА: двойное раскрытие ──
+  if(on){
+    html+='<div class="sheet-price-box">'+
+            '<div class="spb-anchor strike">~$'+t.anchor.toLocaleString()+'</div>'+
+            '<div class="spb-row"><span class="spb-old">$'+t.price.toLocaleString()+'</span>'+
+            '<span class="spb-new">$'+discPrice(t.price).toLocaleString()+'</span>'+
+            '<span class="t-disc">−'+DISC+'%</span></div>'+
+            '<div class="spb-save">💰 Ваша экономия: $'+savings(t.price).toLocaleString()+'</div>'+
+          '</div>'+
+          '<button type="button" class="t-btn btn-fire sheet-pay" onclick="openDiscountSite();closeSheet()">🛒 На сайт — выбрать формат (−'+DISC+'%)</button>'+
+          '<div class="sheet-detail-sub">Скидка действует ограниченное время</div>';
+  } else if(alreadyRevealed){
+    html+='<div class="sheet-price-box">'+
+            '<div class="spb-anchor strike">~$'+t.anchor.toLocaleString()+'</div>'+
+            '<div class="spb-row"><span class="spb-plain">$'+t.price.toLocaleString()+'</span><span class="spb-lbl">обычная цена</span></div>'+
+            '<div class="spb-bonus">🎁 Сегодня — бонус −20%. Закрепится в чате на 24 ч</div>'+
+          '</div>'+
+          '<button type="button" class="t-btn btn-fire sheet-pay" onclick="book();closeSheet()">🎁 Закрепить скидку −20%</button>'+
+          '<div class="sheet-detail-sub">Бонус закрепляется в чате бота — аппка не закроется</div>';
   } else {
-    html+='<button type="button" class="t-btn btn-fire sheet-pay" onclick="book();closeSheet()">🔥 Узнать специальные цены</button>';
+    html+='<div class="sheet-reveal-cta">'+
+            '<div class="src-q">Посмотрели, что входит?</div>'+
+            '<div class="src-a">Полная ценность около <b>$'+t.anchor.toLocaleString()+'</b>. А ваша цена —</div>'+
+            '<button type="button" class="t-btn btn-fire" onclick="revealPriceFromSheet('+i+')">💰 Показать мою цену</button>'+
+          '</div>';
   }
-  html+='<div class="sheet-detail-sub">'+(isDiscountVisible()?'На сайте все форматы и оплата — один раз по ссылке':'Сначала узнайте спец. цены здесь')+'</div>';
+
   $('sheetBody').innerHTML=html;$('sheet').classList.add('on');$('sheetBg').classList.add('on');
+}
+
+function revealPriceFromSheet(i){
+  REVEALED[i]=true;
+  if(TG&&TG.HapticFeedback){try{TG.HapticFeedback.notificationOccurred('success');}catch(e){}}
+  renderTariffs(false);
+  openSheet(i);
 }
 function openExternal(url){
   if(!url) return;
@@ -701,7 +887,7 @@ function openExternal(url){
 
 function openHowmany(){
   if(!HOWMANY){
-    showToast('Калькулятор — кнопка «💸 Посчитать мой доход» в меню бота');
+    showToast('Калькулятор — кнопка «Сколько можно заработать на Амазон» в меню бота');
     return;
   }
   openExternal(HOWMANY);
@@ -725,19 +911,18 @@ function tgLink(url){
 function openContact(){ tgLink(CONTACT); }
 
 function claimPromoInBot(){
-  if(TG && TG.sendData){
-    TG.sendData('claim_promo');
-    showToast('Закрепляем скидку… Снова откройте «Форматы» из меню бота');
-    if(TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
-    return;
-  }
+  // ВАЖНО: TG.sendData() закрывает Mini App — поэтому НЕ используем его для claim.
+  // openTelegramLink открывает чат с ботом ПОВЕРХ аппки, аппка остаётся жить.
+  // Бот по /start=claim_promo сразу ставит таймер и закреп — это мгновенно.
   var url = botDeepLink('claim_promo');
   if(TG && TG.openTelegramLink){
     TG.openTelegramLink(url);
-    showToast('Откройте чат с ботом — там закрепим скидку на 24 ч');
-  } else {
-    tgLink(url);
+    showToast('Закрепляем скидку в чате — таймер уже пошёл ⏳ Аппка останется открытой');
+    if(TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
+    return;
   }
+  // запасной путь (вне Telegram-клиента)
+  tgLink(url);
 }
 
 function book(){
@@ -762,7 +947,7 @@ function updateCta(){
     main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
     main.classList.remove('btn-fire');
   } else {
-    main.innerHTML='🔥 Нажми чтобы узнать специальные цены<span class="cta-sub">без бонуса — обычные цены · бонус только после нажатия</span>';
+    main.innerHTML='🎁 Закрепить мою скидку −20%<span class="cta-sub">персональный бонус на 24 часа · в чате бота</span>';
     main.classList.add('btn-fire');
   }
 }
@@ -867,7 +1052,7 @@ if(isDiscountVisible()) renderTariffs(false);
   }
   var hint=document.getElementById('howmanyHint');
   if(hint && !HOWMANY){
-    hint.textContent='Калькулятор — кнопка «💸 Посчитать мой доход» в меню бота.';
+    hint.textContent='Калькулятор — кнопка «💸 Сколько можно заработать на Амазон» в меню бота.';
   }
 })();
 
