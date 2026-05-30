@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530d-api-3state -->
+<!-- app-build:20260530e -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -482,6 +482,7 @@ function initTelegramViewport(){
   if (TG.setHeaderColor) TG.setHeaderColor('#070809');
   if (TG.setBackgroundColor) TG.setBackgroundColor('#070809');
   applyTelegramInsets();
+  syncPromoState();
   setTimeout(function(){
     TG.expand();
     if (TG.requestFullscreen && isWideDesktop()) {
@@ -519,6 +520,12 @@ let UID = '';
 let PROMO_REAL = false;
 const NOW_S = Math.floor(Date.now()/1000);
 const FUNNEL_LOCKED = params.get('locked') === '1';
+
+// ── API vadjik.com (цены + дата потока) ──
+var API_URL = 'https://vadjik.com/api/public/app-data';
+var API_KEY = params.get('apikey') || 'vadjik_api_2cQ5gPnlBXo7iMAC7UofpurS4fa8uBVM';
+var API_SLUG_MAP = { base:'base', flow:'flow', advanced:'advanced', pro:'pro' };
+var FLOW_DATE = null, FLOW_TIME = null, API_DISCOUNTS = null, SERVER_SKEW = 0;
 
 function nowSec(){ return Math.floor(Date.now()/1000); }
 function tgUid(){
@@ -573,27 +580,35 @@ function applyPromoFromUrl(){
   var sig = params.get('sig')||'';
   var uid = params.get('uid')||'';
   var discount = params.get('discount')||'';
-  if(deadline > NOW_S && discUrl > 0 && sig && uid){
+  if(deadline > nowSec() && discUrl > 0 && sig && uid){
     if(tu && tu !== String(uid)){
       resetDiscountDisplay();
-      return;
+      return false;
     }
     setPromoActive(deadline, discUrl, sig, uid, discount || buildDiscountLink(uid, deadline, sig));
     savePromoLocal();
-    return;
+    return true;
   }
-  if(loadPromoLocal()) return;
+  if(loadPromoLocal()) return true;
   resetDiscountDisplay();
+  return false;
 }
-applyPromoFromUrl();
-
-// ── Публичный API vadjik.com: актуальные цены + дата старта потока ──
-// Если сервер недоступен — тихо остаёмся на локальных ценах из TARIFFS.
-var API_URL = 'https://vadjik.com/api/public/app-data';
-var API_KEY = params.get('apikey') || 'vadjik_api_2cQ5gPnlBXo7iMAC7UofpurS4fa8uBVM';
-// slug в API → id тарифа в аппке
-var API_SLUG_MAP = { base:'base', flow:'flow', advanced:'advanced', pro:'pro' };
-var FLOW_DATE = null, FLOW_TIME = null, API_DISCOUNTS = null, SERVER_SKEW = 0;
+function applyFlowFromUrl(){
+  var fd = params.get('flowdate');
+  if(!fd) return;
+  FLOW_DATE = fd;
+  FLOW_TIME = params.get('flowtime') || '19:00';
+  renderFlowDate();
+}
+function syncPromoState(){
+  applyFlowFromUrl();
+  var hadPromo = isDiscountVisible();
+  if(applyPromoFromUrl() || hadPromo !== isDiscountVisible()){
+    renderTariffs(false);
+    initPromoBar();
+    updateCta();
+  }
+}
 
 function fmtFlowDate(iso){
   if(!iso) return null;
@@ -628,7 +643,7 @@ async function loadAppData(){
     renderTariffs(false);
     renderFlowDate();
   } catch(e){
-    // молча: локальные цены уже стоят
+    // молча: локальные цены уже стоят; дата потока может быть из URL бота
   }
 }
 
@@ -643,6 +658,8 @@ function renderFlowDate(){
     el.style.display = 'none';
   }
 }
+applyFlowFromUrl();
+applyPromoFromUrl();
 loadAppData();
 
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
