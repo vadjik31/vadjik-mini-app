@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530f -->
+<!-- app-build:20260530g -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -506,6 +506,7 @@ const CONTACT = params.get('contact') || 'https://t.me/vadjik';
 const SITE = params.get('site') || 'https://vadjik.com/';
 const RESULTS = params.get('results') || 'https://vadjik.com/results';
 const HOWMANY = params.get('howmany') || '';
+const PROMO_HOURS = parseInt(params.get('hours') || '24', 10) || 24;
 
 // Скидка — ТОЛЬКО после «Нажми чтобы узнать спец. цены» (бот выдаёт sig + deadline).
 const DEFAULT_DISC = 20;
@@ -600,13 +601,15 @@ function applyFlowFromUrl(){
   renderFlowDate();
 }
 function syncPromoState(){
-  applyFlowFromUrl();
-  var hadPromo = isDiscountVisible();
-  if(applyPromoFromUrl() || hadPromo !== isDiscountVisible()){
-    renderTariffs(false);
-    initPromoBar();
-    updateCta();
-  }
+  try {
+    applyFlowFromUrl();
+    var hadPromo = isDiscountVisible();
+    if(applyPromoFromUrl() || hadPromo !== isDiscountVisible()){
+      renderTariffs(false);
+      initPromoBar();
+      updateCta();
+    }
+  } catch(e) {}
 }
 
 function fmtFlowDate(iso){
@@ -657,9 +660,6 @@ function renderFlowDate(){
     el.style.display = 'none';
   }
 }
-applyFlowFromUrl();
-applyPromoFromUrl();
-loadAppData();
 
 function discPrice(p){ return Math.round(p*(100-DISC)/100); }
 function savings(p){ return p - discPrice(p); }
@@ -772,21 +772,19 @@ var REVEALED = {};
 
 var $=function(id){return document.getElementById(id);};
 
-// IntersectionObserver — объявляем ДО renderTariffs (иначе скрипт падает и экран чёрный)
-var io=new IntersectionObserver(function(es){
-  es.forEach(function(e){
-    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-  });
-},{threshold:.1});
-
-$('vsRows').innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
-$('road').innerHTML = ROAD.map(function(s){return '<div class="step-r reveal"><div class="num">'+s.n+'</div><div class="body"><b>'+s.t+'</b><p>'+s.d+'</p></div></div>';}).join('');
-$('resCnt').textContent = STUDENTS.length+" учеников";
-$('resScroll').innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
+var io = typeof IntersectionObserver !== 'undefined'
+  ? new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:.1})
+  : { observe: function(el){ if(el) el.classList.add('in'); }, unobserve: function(){} };
 
 function renderTariffs(flash){
+  var el = $('tariffs');
+  if(!el) return;
   var on=isDiscountVisible();
-  $('tariffs').innerHTML = TARIFFS.map(function(t,i){
+  el.innerHTML = TARIFFS.map(function(t,i){
     var badge=t.badge?'<span class="badge '+t.badgeCls+'">'+t.badge+'</span>':'';
     var feats=t.feats.map(function(f){return '<li class="'+(f[1]?'':'no')+'"><span class="ic">'+(f[1]?'✓':'×')+'</span>'+f[0]+'</li>';}).join('');
     var revealed=on||REVEALED[i]; // скидка активна ИЛИ человек нажал «показать цену»
@@ -831,7 +829,26 @@ function renderTariffs(flash){
            mainBtn+moreBtn+'</div>';
   }).join('');
 }
-renderTariffs(false);
+
+function bootApp(){
+  try {
+    applyFlowFromUrl();
+    applyPromoFromUrl();
+    var vs=$('vsRows'), road=$('road'), rc=$('resCnt'), rs=$('resScroll');
+    if(vs) vs.innerHTML = VS.map(function(v){return '<div class="vs-row"><div class="lbl">'+v.l+'</div><div class="self">'+v.self+'</div><div class="us">'+v.us+'</div></div>';}).join('');
+    if(road) road.innerHTML = ROAD.map(function(s){return '<div class="step-r reveal"><div class="num">'+s.n+'</div><div class="body"><b>'+s.t+'</b><p>'+s.d+'</p></div></div>';}).join('');
+    if(rc) rc.textContent = STUDENTS.length+' учеников';
+    if(rs) rs.innerHTML = STUDENTS.map(function(s){var col=COLORS[s.c]||'#fff';return '<div class="res-card glass"><div class="res-imgwrap" onclick="viewImg(\''+s.img+'\')" style="background:linear-gradient(135deg,'+col+'33,'+col+'11)"><div class="res-ph" style="color:'+col+'"><span class="big">'+s.res+'</span><span class="sm">'+s.lbl+'</span></div><img src="'+s.img+'" alt="'+s.name+'" loading="lazy" onerror="this.remove()"></div><div class="res-meta"><div class="res-num" style="color:'+col+'">'+s.res+'</div><div class="res-lbl">'+s.lbl+'</div><div class="res-name">'+(FLAGS[s.loc]||'')+' '+s.name+'</div><div class="res-loc">'+s.mkt+'</div></div></div>';}).join('');
+    renderTariffs(false);
+    updateCta();
+    initPromoBar();
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+    loadAppData();
+  } catch(e) {
+    var t=$('tariffs');
+    if(t && !t.innerHTML) t.innerHTML='<p class="hint" style="padding:16px">Не удалось загрузить. Закройте и откройте аппку снова.</p>';
+  }
+}
 
 function openDiscountSite(){
   if(!isDiscountVisible() || !DISCOUNT){
@@ -957,19 +974,18 @@ function book(){
 function updateCta(){
   var main=$('ctaMain');
   if(!main) return;
-  if(isDiscountVisible()){
-    main.innerHTML='🛒 На сайт — выбрать формат<span class="cta-sub">−'+DISC+'% · '+PROMO_HOURS+' ч</span>';
-  } else if(FUNNEL_LOCKED){
-    main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
-    main.classList.remove('btn-fire');
-  } else {
-    main.innerHTML='🎁 Закрепить мою скидку −20%<span class="cta-sub">персональный бонус на 24 часа · в чате бота</span>';
-    main.classList.add('btn-fire');
-  }
+  try {
+    if(isDiscountVisible()){
+      main.innerHTML='🛒 На сайт — выбрать формат<span class="cta-sub">−'+DISC+'% · '+PROMO_HOURS+' ч</span>';
+    } else if(FUNNEL_LOCKED){
+      main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
+      main.classList.remove('btn-fire');
+    } else {
+      main.innerHTML='🎁 Закрепить мою скидку −20%<span class="cta-sub">персональный бонус на 24 часа · в чате бота</span>';
+      main.classList.add('btn-fire');
+    }
+  } catch(e) {}
 }
-updateCta();
-
-document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
 var SECTION_STOPS = ['sec-formats','sec-why','sec-road','sec-earn','sec-results'];
 
@@ -1009,17 +1025,19 @@ function revealUntilNextSection(startId){
       }
     });
   });
-  var obs = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){
-      if(en.isIntersecting){
-        var id = en.target.id;
-        links.forEach(function(a){
-          a.classList.toggle('active', a.getAttribute('href') === '#'+id);
+  var obs = typeof IntersectionObserver !== 'undefined'
+    ? new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){
+            var id = en.target.id;
+            links.forEach(function(a){
+              a.classList.toggle('active', a.getAttribute('href') === '#'+id);
+            });
+          }
         });
-      }
-    });
-  }, {rootMargin:'-20% 0px -55% 0px', threshold:0});
-  ids.forEach(function(id){
+      }, {rootMargin:'-20% 0px -55% 0px', threshold:0})
+    : null;
+  if(obs) ids.forEach(function(id){
     var el = document.getElementById(id);
     if(el) obs.observe(el);
   });
@@ -1053,9 +1071,8 @@ function initPromoBar(){
   clearInterval(promoTickTimer);
   promoTickTimer=setInterval(renderBar,1000);
 }
-initPromoBar();
-if(isDiscountVisible()) renderTariffs(false);
-syncPromoState();
+
+bootApp();
 
 (function(){
   var sec=document.getElementById('sec-earn');
