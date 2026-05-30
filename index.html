@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530g -->
+<!-- app-build:20260530h -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -547,6 +547,14 @@ function resetDiscountDisplay(){
   SIG = '';
   UID = '';
 }
+function clearAppLocalState(){
+  try { localStorage.removeItem(PROMO_LS_KEY); } catch(e) {}
+  resetDiscountDisplay();
+  REVEALED = {};
+}
+function isAppReset(){
+  return params.get('reset') === '1';
+}
 function setPromoActive(deadline, disc, sig, uid, discount){
   DEADLINE = deadline;
   DISC = disc;
@@ -574,6 +582,10 @@ function loadPromoLocal(){
   } catch(e) { return false; }
 }
 function applyPromoFromUrl(){
+  if(isAppReset()){
+    clearAppLocalState();
+    return false;
+  }
   var tu = tgUid();
   var discUrl = parseInt(params.get('disc')||'0',10);
   var deadline = parseInt(params.get('deadline')||'0',10);
@@ -832,6 +844,7 @@ function renderTariffs(flash){
 
 function bootApp(){
   try {
+    if(isAppReset()) clearAppLocalState();
     applyFlowFromUrl();
     applyPromoFromUrl();
     var vs=$('vsRows'), road=$('road'), rc=$('resCnt'), rs=$('resScroll');
