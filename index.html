@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Amazon с Вадимом</title>
-<!-- app-build:20260530h -->
+<!-- app-build:20260530i -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -193,6 +193,9 @@
   .badge.pop{background:rgba(167,139,250,.22);color:#c4b5fd}
   .badge.vip{background:rgba(16,217,138,.22);color:#6ee7b7}
   .t-name{font-family:var(--disp);font-size:23px;font-weight:800}
+  .t-flow-start{margin:-4px 0 6px;font-size:13.5px;font-weight:700;color:#93c5fd;
+    background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.28);
+    display:inline-block;padding:4px 10px;border-radius:8px}
   .t-sub{color:var(--mut);font-size:14px;margin-bottom:15px}
   .t-price{font-family:var(--disp);font-size:38px;font-weight:800;letter-spacing:-1.5px}
   .t-price small{font-size:15px;color:var(--mut);font-weight:600}
@@ -242,11 +245,7 @@
   .spb-lbl{font-size:14px;color:var(--mut);font-family:var(--body)}
   .spb-save{margin-top:8px;font-size:14px;color:#86efac;font-weight:700}
   .spb-bonus{margin-top:10px;font-size:14px;color:var(--gold);font-weight:700}
-  /* строка даты потока */
-  .flow-date-line{margin:14px 0 4px;padding:12px 15px;border-radius:14px;font-size:14.5px;
-    background:linear-gradient(135deg,rgba(96,165,250,.1),rgba(167,139,250,.07));
-    border:1px solid rgba(96,165,250,.3);color:#cdd9ee;line-height:1.45}
-  .flow-date-line b{color:#bcd3f5}
+  /* строка даты потока — только на карточке «Поток» (.t-flow-start) */
   .t-result{font-size:14px;color:#dbe0e8;margin:9px 0 17px;padding:11px 14px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--line)}
   .t-feats{list-style:none;margin-bottom:17px}
   .t-feats li{display:flex;gap:10px;align-items:flex-start;font-size:15px;padding:5px 0}
@@ -397,7 +396,6 @@
   <!-- 1. ЦЕНЫ СРАЗУ — человек за этим и пришёл -->
   <div class="section-h" id="sec-formats"><span class="bar"></span><h2>Форматы и цены</h2></div>
   <p class="hint reveal" style="margin-top:-8px">Сначала смотрите, что входит — потом откройте цену. Инструменты (~$2000) в любом пакете бесплатно, можно платить частями</p>
-  <div class="flow-date-line reveal" id="flowDateLine" style="display:none"></div>
   <div id="tariffs"></div>
   <div class="tg-desktop-spacer" aria-hidden="true"></div>
 
@@ -610,7 +608,6 @@ function applyFlowFromUrl(){
   if(!fd) return;
   FLOW_DATE = fd;
   FLOW_TIME = params.get('flowtime') || '19:00';
-  renderFlowDate();
 }
 function syncPromoState(){
   try {
@@ -630,6 +627,18 @@ function fmtFlowDate(iso){
   var months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
   var d = parseInt(p[2],10), m = parseInt(p[1],10)-1;
   return d + ' ' + (months[m]||'') ;
+}
+function fmtFlowDateLong(iso){
+  if(!iso) return '';
+  var p = iso.split('-'); if(p.length!==3) return iso;
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var d = parseInt(p[2],10), m = parseInt(p[1],10)-1;
+  return d + ' ' + (months[m]||'');
+}
+function flowStartHtml(){
+  if(!FLOW_DATE) return '';
+  var t = FLOW_TIME ? ' · ' + FLOW_TIME : '';
+  return '<div class="t-flow-start">📅 Старт ' + fmtFlowDateLong(FLOW_DATE) + t + '</div>';
 }
 
 async function loadAppData(){
@@ -655,21 +664,8 @@ async function loadAppData(){
       SERVER_SKEW = data.server_now.unix - Math.floor(Date.now()/1000);
     }
     renderTariffs(false);
-    renderFlowDate();
   } catch(e){
     // молча: локальные цены уже стоят; дата потока может быть из URL бота
-  }
-}
-
-function renderFlowDate(){
-  var el = document.getElementById('flowDateLine');
-  if(!el) return;
-  if(FLOW_DATE){
-    el.style.display = '';
-    el.innerHTML = '📅 Ближайший «Поток» стартует <b>' + fmtFlowDate(FLOW_DATE) +
-      (FLOW_TIME ? ' в ' + FLOW_TIME : '') + '</b> — место можно занять заранее';
-  } else {
-    el.style.display = 'none';
   }
 }
 
@@ -832,8 +828,10 @@ function renderTariffs(flash){
     var flashCls=(flash&&on)?' price-flash':'';
     var moreBtn=revealed?'<button type="button" class="t-more" onclick="openSheet('+i+')">Что входит подробно →</button>':'';
 
+    var flowLine = (t.id === 'flow') ? flowStartHtml() : '';
+
     return '<div class="tariff glass '+t.cls+flashCls+'" data-tariff="'+i+'">'+badge+
-           '<div class="t-name">'+t.name+'</div><div class="t-sub">'+t.sub+'</div>'+
+           '<div class="t-name">'+t.name+'</div>'+flowLine+'<div class="t-sub">'+t.sub+'</div>'+
            valueList+
            priceBlock+
            '<div class="t-result">'+t.result+'</div>'+
@@ -877,6 +875,7 @@ function openSheet(i){
   var alreadyRevealed = on || REVEALED[i];
 
   var html='<h3>'+t.name+(t.badge?' <span class="free">'+t.badge+'</span>':'')+'</h3>'+
+           (t.id === 'flow' ? flowStartHtml() : '') +
            '<div class="ssub">'+t.sub+'</div>'+
            '<div class="sheet-anchor">Если собирать всё это по отдельности — около <b>$'+t.anchor.toLocaleString()+'</b></div>'+
            '<div class="intro">'+d.intro+'</div>';
@@ -907,7 +906,7 @@ function openSheet(i){
             '<div class="spb-bonus">🎁 Сегодня — бонус −20%. Закрепится в чате на 24 ч</div>'+
           '</div>'+
           '<button type="button" class="t-btn btn-fire sheet-pay" onclick="book();closeSheet()">🎁 Закрепить скидку −20%</button>'+
-          '<div class="sheet-detail-sub">Бонус закрепляется в чате бота — аппка не закроется</div>';
+          '<div class="sheet-detail-sub">Аппка закроется — бонус и таймер придут в чат</div>';
   } else {
     html+='<div class="sheet-reveal-cta">'+
             '<div class="src-q">Посмотрели, что входит?</div>'+
@@ -957,18 +956,14 @@ function tgLink(url){
 function openContact(){ tgLink(CONTACT); }
 
 function claimPromoInBot(){
-  // ВАЖНО: TG.sendData() закрывает Mini App — поэтому НЕ используем его для claim.
-  // openTelegramLink открывает чат с ботом ПОВЕРХ аппки, аппка остаётся жить.
-  // Бот по /start=claim_promo сразу ставит таймер и закреп — это мгновенно.
-  var url = botDeepLink('claim_promo');
-  if(TG && TG.openTelegramLink){
-    TG.openTelegramLink(url);
-    showToast('Закрепляем скидку в чате — таймер уже пошёл ⏳ Аппка останется открытой');
-    if(TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
+  if(TG && TG.sendData){
+    if(TG.HapticFeedback){
+      try { TG.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+    }
+    TG.sendData('claim_promo');
     return;
   }
-  // запасной путь (вне Telegram-клиента)
-  tgLink(url);
+  tgLink(botDeepLink('claim_promo'));
 }
 
 function book(){
@@ -994,7 +989,7 @@ function updateCta(){
       main.innerHTML='💬 Написать Вадиму<span class="cta-sub">стандартные цены · без спецбонуса</span>';
       main.classList.remove('btn-fire');
     } else {
-      main.innerHTML='🎁 Закрепить мою скидку −20%<span class="cta-sub">персональный бонус на 24 часа · в чате бота</span>';
+      main.innerHTML='🎁 Закрепить мою скидку −20%<span class="cta-sub">закроется аппка · бонус в чате на 24 ч</span>';
       main.classList.add('btn-fire');
     }
   } catch(e) {}
